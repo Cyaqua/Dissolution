@@ -59,9 +59,11 @@ public class PlayerTickHandler {
 							0.3D, 0.0D, new int[0]);
 				}
 				if(event.player.dimension == -1 && TartarosConfig.respawnInNether) {
-					BlockPos spawnPos = event.player.getBedLocation(event.player.getSpawnDimension());
+					BlockPos spawnPos = event.player.getBedLocation(0);
+					if(spawnPos == null)
+						spawnPos = event.player.world.getMinecraftServer().worldServerForDimension(0).getSpawnPoint();
 					event.player.setPosition(spawnPos.getX() / 8, spawnPos.getY() / 8, spawnPos.getZ() / 8);
-					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, event.player.getSpawnDimension());
+					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, 0);
 				}
 				ticksSpentNearSpawn = 0;
 			}

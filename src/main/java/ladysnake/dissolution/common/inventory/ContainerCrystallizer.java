@@ -104,7 +104,7 @@ public class ContainerCrystallizer extends Container {
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = ItemStack.EMPTY;
+        ItemStack itemstack = null;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -116,7 +116,7 @@ public class ContainerCrystallizer extends Container {
             {
                 if (!this.mergeItemStack(itemstack1, 3, 39, true))
                 {
-                    return ItemStack.EMPTY;
+                    return null;
                 }
 
                 slot.onSlotChange(itemstack1, itemstack);
@@ -127,48 +127,48 @@ public class ContainerCrystallizer extends Container {
                 {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false))
                     {
-                        return ItemStack.EMPTY;
+                        return null;
                     }
                 }
                 else if (TileEntityCrystallizer.isItemFuel(itemstack1))
                 {
                     if (!this.mergeItemStack(itemstack1, 1, 2, false))
                     {
-                        return ItemStack.EMPTY;
+                        return null;
                     }
                 }
                 else if (index >= 3 && index < 30)
                 {
                     if (!this.mergeItemStack(itemstack1, 30, 39, false))
                     {
-                        return ItemStack.EMPTY;
+                        return null;
                     }
                 }
                 else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false))
                 {
-                    return ItemStack.EMPTY;
+                    return null;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 3, 39, false))
             {
-                return ItemStack.EMPTY;
+                return null;
             }
 
-            if (itemstack1.isEmpty())
+            if (itemstack1.stackSize == 0)
             {
-                slot.putStack(ItemStack.EMPTY);
+                slot.putStack(null);
             }
             else
             {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.getCount() == itemstack.getCount())
+            if (itemstack1.stackSize == itemstack.stackSize)
             {
-                return ItemStack.EMPTY;
+                return null;
             }
 
-            slot.onTake(playerIn, itemstack1);
+            slot.func_82870_a(playerIn, itemstack1);
         }
 
         return itemstack;

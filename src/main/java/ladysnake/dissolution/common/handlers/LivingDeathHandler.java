@@ -13,11 +13,11 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.Helper;
 import ladysnake.dissolution.common.items.ItemScythe;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntityStray;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.SkeletonType;
+import net.minecraft.entity.monster.ZombieType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -57,23 +57,24 @@ public class LivingDeathHandler {
 		}
 
 		ItemStack eye = Helper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
-		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
+		if (killer.world.rand.nextInt(1) == 0 && eye != null && !killer.world.isRemote) {
 
 			EntityMinion corpse = null;
 			
 			if(victim instanceof EntityPigZombie) {
 				corpse = new EntityMinionPigZombie(victim.world, ((EntityZombie)victim).isChild());
 			} else if (victim instanceof EntityZombie) {
-				corpse = new EntityMinionZombie(victim.world, victim instanceof EntityHusk, ((EntityZombie)victim).isChild());
+				corpse = new EntityMinionZombie(victim.world, ((EntityZombie)victim).func_189777_di() == ZombieType.HUSK, ((EntityZombie)victim).isChild());
 			} else if (victim instanceof EntitySkeleton) {
-				corpse = new EntityMinionSkeleton(victim.world);
-			} else if(victim instanceof EntityStray){
-				corpse = new EntityMinionStray(victim.world);
+				if (((EntitySkeleton) victim).func_189771_df() == SkeletonType.STRAY)
+					corpse = new EntityMinionStray(victim.world);
+				else
+					corpse = new EntityMinionSkeleton(victim.world);
 			}
-
 			if (corpse != null) {
 				corpse.setPosition(victim.posX, victim.posY, victim.posZ);
 				for (ItemStack stuff : victim.getEquipmentAndArmor()) {
+					if(stuff == null) continue;
 					if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, victim))
 						corpse.setItemStackToSlot(EntityEquipmentSlot.HEAD, stuff);
 					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, victim))
@@ -83,9 +84,9 @@ public class LivingDeathHandler {
 					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, victim))
 						corpse.setItemStackToSlot(EntityEquipmentSlot.FEET, stuff);
 					
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, victim) && !stuff.isEmpty())
+					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, victim) && stuff != null)
 						corpse.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stuff);
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, victim) && !stuff.isEmpty())
+					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, victim) && stuff != null)
 						corpse.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stuff);
 				}
 				corpse.onUpdate();

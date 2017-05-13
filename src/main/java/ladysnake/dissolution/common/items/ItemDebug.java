@@ -22,11 +22,11 @@ public class ItemDebug extends Item {
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World worldIn, EntityPlayer playerIn, EnumHand handIn) {
 		int debugWanted = 2;
 		switch(debugWanted) {
 		case 0 : 
-			playerIn.sendStatusMessage(new TextComponentTranslation("dissolution.jei.recipe.crystallizer", new Object[0]), true);
+			playerIn.sendStatusMessage(new TextComponentTranslation("dissolution.jei.recipe.crystallizer", new Object[0]));
 			break;
 		case 1 :	
 			IncorporealDataHandler.getHandler(playerIn).setIncorporeal(!IncorporealDataHandler.getHandler(playerIn).isIncorporeal(), playerIn);
@@ -36,6 +36,6 @@ public class ItemDebug extends Item {
 				CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) playerIn, playerIn.dimension == -1 ? 0 : -1);
 			break;
 		}
-		return super.onItemRightClick(worldIn, playerIn, handIn);
+		return super.onItemRightClick(itemStack, worldIn, playerIn, handIn);
 	}
 }

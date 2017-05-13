@@ -39,7 +39,7 @@ public class JEICompat implements IModPlugin {
         stackHelper = jeiHelpers.getStackHelper();
         IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
         
-		registry.addRecipeCategories(new CrystallizerRecipeCategory(guiHelper));
+		registry.addRecipeCategories(new CrystallizerRecipeCategory(guiHelper));/*
 		registry.handleRecipes(CrystallizerRecipe.class, (CrystallizerRecipe cr) -> new BlankRecipeWrapper() {
 
 			@Override
@@ -51,9 +51,9 @@ public class JEICompat implements IModPlugin {
 				ingredients.setOutput(ItemStack.class, cr.getOutput());
 			}
 			
-		}, Reference.MOD_ID + ".crystallizer");
+		}, Reference.MOD_ID + ".crystallizer");*/
 		
-		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
+		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes);
 		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
 	}
 	

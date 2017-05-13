@@ -7,7 +7,6 @@ import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -16,7 +15,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -37,21 +35,21 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 			return;
 		}
 		++processElapsed;
-		if(processElapsed%200 == 0) {
+		if(processElapsed%100 == 0) {
 			consumeSoulSand();
 			Random rand = new Random();
-			if(rand.nextInt(30) == 0) soulCount++;
+			if(rand.nextInt(10) == 0) soulCount++;
 			ItemStack outputStack = new ItemStack(Blocks.SAND);
 			if(this.world.getTileEntity(pos.down()) != null && this.world.getTileEntity(pos.down()) instanceof TileEntityHopper){
 				TileEntityHopper hopper = ((TileEntityHopper)this.world.getTileEntity(pos.down()));
 				IItemHandler handler = hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
 				int slot = -1;
 				for (int j = 0; j < handler.getSlots() && slot == -1; j ++){
-					if (handler.getStackInSlot(j).isEmpty()){
+					if (handler.getStackInSlot(j) == null){
 						slot = j;
 					}
 					else {
-						if (handler.getStackInSlot(j).getCount() < handler.getSlotLimit(j) && ItemStack.areItemsEqual(handler.getStackInSlot(j), outputStack)){
+						if (handler.getStackInSlot(j).stackSize < 64 && ItemStack.areItemsEqual(handler.getStackInSlot(j), outputStack)){
 							slot = j;
 						}
 					}
@@ -65,11 +63,11 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 					if(handler != null) {
 						int slot = -1;
 						for (int j = 0; j < handler.getSlots() && slot == -1; j ++){
-							if (handler.getStackInSlot(j).isEmpty()){
+							if (handler.getStackInSlot(j) == null){
 								slot = j;
 							}
 							else {
-								if (handler.getStackInSlot(j).getCount() < handler.getSlotLimit(j) && ItemStack.areItemsEqual(handler.getStackInSlot(j), outputStack) && ItemStack.areItemStackTagsEqual(handler.getStackInSlot(j), outputStack)){
+								if (handler.getStackInSlot(j).stackSize < 64 && ItemStack.areItemsEqual(handler.getStackInSlot(j), outputStack) && ItemStack.areItemStackTagsEqual(handler.getStackInSlot(j), outputStack)){
 									slot = j;
 								}
 							}

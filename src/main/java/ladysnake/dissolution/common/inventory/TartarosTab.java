@@ -1,10 +1,9 @@
 package ladysnake.dissolution.common.inventory;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
 
 public class TartarosTab extends CreativeTabs {
 
@@ -13,8 +12,8 @@ public class TartarosTab extends CreativeTabs {
 	}
 	
 	@Override
-	public ItemStack getTabIconItem() {
-		return ItemBaseResource.resourceFromName("ectoplasm");
+	public Item getTabIconItem() {
+		return ItemBaseResource.resourceFromName("ectoplasm").getItem();
 	}
 
 }

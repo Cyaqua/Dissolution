@@ -2,6 +2,8 @@ package ladysnake.dissolution.common.blocks;
 
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
@@ -76,8 +78,8 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation,
     }
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack facing, EnumFacing hitX, float hitY, float hitZ, float p_180639_10_)
+	{
 		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
 		if (playerCorp.isIncorporeal()) {
 			this.getTE(worldIn, pos).setDeathMessage(playerCorp.getLastDeathMessage());
@@ -88,7 +90,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation,
 			try {
 				//System.out.println(this.getTE(worldIn, pos));
 				if (this.getTE(worldIn, pos).getDeathMessage() != null && !this.getTE(worldIn, pos).getDeathMessage().trim().isEmpty())
-					playerIn.sendStatusMessage(new TextComponentString(this.getTE(worldIn, pos).getDeathMessage()), false);
+					playerIn.sendStatusMessage(new TextComponentString(this.getTE(worldIn, pos).getDeathMessage()));
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 			}
@@ -103,7 +105,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation,
     }
 	
 	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
 
@@ -128,7 +130,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation,
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return state.getValue(PART) == BlockSepulture.EnumPartType.HEAD ? Items.AIR : ModItems.SEPULTURE;
+        return state.getValue(PART) == BlockSepulture.EnumPartType.HEAD ? null : ModItems.SEPULTURE;
     }
 	
 	@Override

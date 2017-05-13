@@ -13,11 +13,12 @@ public class TartarosConfig {
 	public static boolean anchorsXRay = true;
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
-	public static int flightMode = CUSTOM_FLIGHT;
 	public static boolean oneUseWaystone = true;
 	public static boolean respawnInNether = true;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
+	public static int flightMode = CUSTOM_FLIGHT;
+	public static int soul_extracting_chance = 8;
 	
 	public static void syncConfig() {
 		try {
@@ -77,6 +78,12 @@ public class TartarosConfig {
 	        		"doSablePop",
 	        		"true",
 	        		"Whether output stacks from the extractor should spawn items in world when there is no appropriate container");
+	        
+	        Property soulExtractingProp = Tartaros.config.get(
+	        		Configuration.CATEGORY_GENERAL, 
+	        		"soulExtractingChance", 
+	        		"8",
+	        		"For each soulsand processed by the extractor, there is a one in N probability to get a soul. (higher number = less souls");
 	        
 	        
 

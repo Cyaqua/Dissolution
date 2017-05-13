@@ -3,6 +3,8 @@ package ladysnake.dissolution.common.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
@@ -18,6 +20,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -55,9 +58,8 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, IResp
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack facing, EnumFacing hitX, float hitY, float hitZ, float p_180639_10_)
+	{
 		if(state.getValue(PART) == BlockSoulAnchor.EnumPartType.CAP) return false;
 		
 		if (!(worldIn.getTileEntity(pos) instanceof TileEntitySoulAnchor) || 
@@ -88,6 +90,7 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, IResp
 		} catch(IndexOutOfBoundsException e) {
 			ret = new TileEntitySoulAnchor();
 		}
+		System.out.println(ret);
 		return ret;
 	}
 	

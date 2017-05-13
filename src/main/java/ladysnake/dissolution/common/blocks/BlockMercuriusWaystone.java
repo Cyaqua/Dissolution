@@ -46,8 +46,8 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack facing, EnumFacing hitX, float hitY, float hitZ, float p_180639_10_)
+	{
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
 		if(playerCorp.isIncorporeal()){
 			playerCorp.setIncorporeal(false, playerIn);
@@ -77,37 +77,43 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
 			ItemStack stack) {
 		if(!worldIn.isRemote) {
-			if (worldIn.provider.getDimensionType().getId() != -1) {
-				WorldServer worldservernether = worldIn.getMinecraftServer().worldServerForDimension(-1);
-			    BlockPos bp = getAnchorBaseSpawnPos(worldservernether, pos);
-			    if(bp.getY() > 0)  {
-			    	BlockSoulAnchor.scheduledBP.add(pos);
-			    	BlockSoulAnchor.scheduledDim.add(placer.dimension);
-			    	worldservernether.setBlockState(bp, ModBlocks.SOUL_ANCHOR.getDefaultState(), 3);
-			    }
-			    else {
-			    	if(placer instanceof EntityPlayer) {
-			    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".cannotplace", new Object[0]), true);
-			    		((EntityPlayer)placer).inventory.addItemStackToInventory(new ItemStack(this));
-			    	}
-			    	WorldServer worldserveroverworld = (WorldServer)worldIn;
-					Random rand = new Random();
-					for(int i = 0; i < 50; i++) {
-					    double motionX = rand.nextGaussian() * 0.02D;
-					    double motionY = rand.nextGaussian() * 0.02D;
-					    double motionZ = rand.nextGaussian() * 0.02D;
-					    worldserveroverworld.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, pos.getX() + 0.5D, pos.getY()+ 1.0D, pos.getZ()+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
-					}
-			    	checkBreaking = false;
-			    	worldIn.setBlockToAir(pos);
-			    	checkBreaking = true;
-			    	return;
-			    }
-			    //System.out.println(bp);
-			}
+			this.placeSoulAnchor(worldIn, pos, placer);
 	    	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		}
-		
+	}
+	
+	public void placeSoulAnchor(World worldIn, BlockPos pos, Entity placer) {
+		if (worldIn.provider.getDimensionType().getId() != -1) {
+			WorldServer worldservernether = worldIn.getMinecraftServer().worldServerForDimension(-1);
+		    BlockPos bp = getAnchorBaseSpawnPos(worldservernether, pos);
+		    if(bp.getY() > 0)  {
+		    	BlockSoulAnchor.scheduledBP.add(pos);
+		    	BlockSoulAnchor.scheduledBP.add(pos);
+		    	BlockSoulAnchor.scheduledDim.add(placer.dimension);
+		    	BlockSoulAnchor.scheduledDim.add(placer.dimension);
+		    	System.out.println(BlockSoulAnchor.scheduledBP);
+		    	worldservernether.setBlockState(bp, ModBlocks.SOUL_ANCHOR.getDefaultState(), 3);
+		    }
+		    else {
+		    	if(placer instanceof EntityPlayer) {
+		    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".cannotplace", new Object[0]));
+		    		((EntityPlayer)placer).inventory.addItemStackToInventory(new ItemStack(this));
+		    	}
+		    	WorldServer worldserveroverworld = (WorldServer)worldIn;
+				Random rand = new Random();
+				for(int i = 0; i < 50; i++) {
+				    double motionX = rand.nextGaussian() * 0.02D;
+				    double motionY = rand.nextGaussian() * 0.02D;
+				    double motionZ = rand.nextGaussian() * 0.02D;
+				    worldserveroverworld.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, pos.getX() + 0.5D, pos.getY()+ 1.0D, pos.getZ()+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
+				}
+		    	checkBreaking = false;
+		    	worldIn.setBlockToAir(pos);
+		    	checkBreaking = true;
+		    	return;
+		    }
+		    //System.out.println(bp);
+		}
 	}
 	
 	@Override
@@ -156,7 +162,7 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	}
 	
 	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
 		addCollisionBoxToList(pos, entityBox, collidingBoxes, COLLISION_BOX);
 	}

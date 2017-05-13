@@ -50,7 +50,7 @@ public class ItemEyeDead extends Item {
 				// System.out.println(entityIn != null &&
 				// (!Helper.findItem((EntityPlayer)entityIn,
 				// ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F : 0.0F);
-				return entityIn != null	&& (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+				return entityIn != null	&& (Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE) != null) 
 						? 1.0F
 						: 0.0F;
 			}
@@ -64,7 +64,7 @@ public class ItemEyeDead extends Item {
 				// (float)(stack.getMaxItemUseDuration() -
 				// entityIn.getItemInUseCount()) / 20.0F));
 				return entityIn == null ? 0.0F
-						: (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
+						: (entityIn.getActiveItemStack() != null && entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
 								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F);
 			}
 		});
@@ -87,8 +87,8 @@ public class ItemEyeDead extends Item {
 		
 		boolean used = false;
 		for (EntityMinion m : minions) {
-			if (ammo.isEmpty() && m.isCorpse()) {
-				((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
+			if (ammo == null && m.isCorpse()) {
+				((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]));
 				break;
 			}
 			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
@@ -99,7 +99,7 @@ public class ItemEyeDead extends Item {
 				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
 			}
 			if(m.isCorpse()) {
-				ammo.shrink(1);
+				ammo.stackSize--;
 				used = true;
 			}
 			m.setCorpse(false);
@@ -110,9 +110,9 @@ public class ItemEyeDead extends Item {
 	
 
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
+	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUse(stack, player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class ItemEyeDead extends Item {
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World worldIn, EntityPlayer playerIn, EnumHand handIn) {
 		ItemStack itemstack = playerIn.getHeldItem(handIn);
 
 		{

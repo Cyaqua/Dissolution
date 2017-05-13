@@ -1,5 +1,7 @@
 package ladysnake.dissolution.common.blocks;
 
+import javax.annotation.Nullable;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
@@ -106,14 +108,14 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
     }
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(getTE(worldIn, pos) != null) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack facing, EnumFacing hitX, float hitY, float hitZ, float p_180639_10_) {
+		if(playerIn.getHeldItem(hand) != null && getTE(worldIn, pos) != null) {
 			if(playerIn.getHeldItem(hand).getItem() == Item.getItemFromBlock(Blocks.SOUL_SAND)) {
-				playerIn.getHeldItem(hand).setCount(getTE(worldIn, pos).addSoulSand(playerIn.getHeldItem(hand).getCount()));
+				playerIn.getHeldItem(hand).stackSize = (getTE(worldIn, pos).addSoulSand(playerIn.getHeldItem(hand).stackSize));
 			}
 			else if(playerIn.getHeldItem(hand).getItem() == Items.GLASS_BOTTLE) {
 				if(getTE(worldIn, pos).retrieveSoul()){
-					playerIn.getHeldItem(hand).shrink(1);
+					playerIn.getHeldItem(hand).stackSize--;
 					playerIn.inventory.addItemStackToInventory(new ItemStack(ModItems.SOUL_IN_A_BOTTLE));
 				}
 			}

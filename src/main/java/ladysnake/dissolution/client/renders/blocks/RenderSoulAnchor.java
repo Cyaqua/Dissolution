@@ -182,9 +182,9 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 */
             if (j >= 1)
             {
-                this.bindTexture(END_PORTAL_TEXTURE);
+                this.bindTexture(END_PORTAL_TEXTURE);/*
                 flag = true;
-                Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
+                Minecraft.getMinecraft().entityRenderer.func_191514_d(true);*/
             }
 /*
             if (j == 1)
@@ -282,11 +282,11 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
         GlStateManager.disableTexGenCoord(GlStateManager.TexGen.T);
         GlStateManager.disableTexGenCoord(GlStateManager.TexGen.R);
         GlStateManager.enableLighting();
-
+/*
         if (flag)
         {
             Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
-        }
+        }*/
     }
 	
     protected int getPasses(double scaledPos_)

@@ -162,7 +162,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	protected EntityArrow getArrow(float p_190726_1_)
     {
         EntityTippedArrow entitytippedarrow = new EntityTippedArrow(this.world, this);
-        entitytippedarrow.setEnchantmentEffectsFromEntity(this, p_190726_1_);
+        //entitytippedarrow.setEnchantmentEffectsFromEntity(this, p_190726_1_);
         if(this instanceof EntityMinionStray)
         	entitytippedarrow.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
         return entitytippedarrow;
@@ -195,7 +195,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 			boolean flag = true;
             ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 
-            if (!itemstack.isEmpty())
+            if (itemstack != null)
             {
                 if (itemstack.isItemStackDamageable())
                 {
@@ -204,7 +204,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
                     if (itemstack.getItemDamage() >= itemstack.getMaxDamage())
                     {
                         this.renderBrokenItemStack(itemstack);
-                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
+                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, null);
                     }
                 }
 

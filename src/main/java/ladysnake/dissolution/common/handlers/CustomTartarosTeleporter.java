@@ -14,7 +14,7 @@ public class CustomTartarosTeleporter {
 
 	public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn)
     {
-		System.out.println("transfering player" + player.getDisplayNameString() + " to dimension " + dimensionIn);
+		//System.out.println("transfering player" + player.getDisplayNameString() + " to dimension " + dimensionIn);
         int i = player.dimension;
         WorldServer worldserver = player.mcServer.worldServerForDimension(player.dimension);
         player.dimension = dimensionIn;

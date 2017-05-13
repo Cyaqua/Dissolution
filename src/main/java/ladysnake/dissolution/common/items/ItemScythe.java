@@ -36,6 +36,9 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public abstract class ItemScythe extends ItemSword {
+
+	protected float attackSpeed, attackRadius;
+	protected boolean alreadyRunningAOE;
 	
 	public ItemScythe(ToolMaterial material) {
 		super(material);
@@ -54,20 +57,17 @@ public abstract class ItemScythe extends ItemSword {
 		effectiveBlocks.put(Material.LEAVES, 1.5f);
 	}
 
-	protected float attackSpeed, attackRadius;
-	protected boolean alreadyRunningAOE;
-
 	
 	
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
-		return !entityLiving.getHeldItemOffhand().isEmpty();
+		return entityLiving.getHeldItemOffhand() != null;
 	}
 	
 	@Override
 	public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
 		stack.damageItem(1, attacker);
-		return !attacker.getHeldItemOffhand().isEmpty();
+		return attacker.getHeldItemOffhand() != null;
 	}
 	
 	@Override
@@ -78,7 +78,7 @@ public abstract class ItemScythe extends ItemSword {
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target)
     {
-        if(!player.getHeldItemOffhand().isEmpty()) return true;
+        if(player.getHeldItemOffhand() != null) return true;
         if(alreadyRunningAOE) return false;
         Integer initialCooldown = new Integer(100);
         player.spawnSweepParticles();
@@ -159,8 +159,8 @@ public abstract class ItemScythe extends ItemSword {
 	
 	public void fillBottle(EntityPlayer p, int nb) {
 		ItemStack bottle = Helper.findItem(p, Items.GLASS_BOTTLE);
-		if (!bottle.isEmpty()) {
-			bottle.shrink(nb);
+		if (bottle != null) {
+			bottle.stackSize -= nb;
 			p.inventory.addItemStackToInventory(new ItemStack(ModItems.SOUL_IN_A_BOTTLE, nb));
 		}
 	}

@@ -58,7 +58,7 @@ public class ModBlocks {
     	registerBlock(SOUL_ANCHOR);
     	registerBlock(MERCURY_CANDLE);
     	registerBlock(SULFUR_CANDLE);
-    	GameRegistry.register(SEPULTURE);
+    	registerBlock(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
     	//registerBlock(RESUSCITATOR);
     }

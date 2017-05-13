@@ -29,13 +29,13 @@ public class ModEntities {
 	
     public static void register() {
     	int id = 0;
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":wandering_soul"), EntityWanderingSoul.class, "wandering_soul", id++, Tartaros.instance, 64, 1, true, 0xA8E4E4, 0x00D2D2);
+    	EntityRegistry.registerModEntity(EntityWanderingSoul.class, "wandering_soul", id++, Tartaros.instance, 64, 1, true, 0xA8E4E4, 0x00D2D2);
     	EntityRegistry.addSpawn(EntityWanderingSoul.class, 50, 1, 1, EnumCreatureType.CREATURE, Biomes.HELL);
     	LootTableList.register(EntityWanderingSoul.LOOT);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_zombie"), EntityMinionZombie.class, "minion_zombie", id++, Tartaros.instance, 64, 1, true);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_pig_zombie"), EntityMinionPigZombie.class, "minion_pig_zombie", id++, Tartaros.instance, 64, 1, true);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_skeleton"), EntityMinionSkeleton.class, "minion_skeleton", id++, Tartaros.instance, 64, 1, true);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_stray"), EntityMinionStray.class, "minion_stray", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(EntityMinionZombie.class, "minion_zombie", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(EntityMinionPigZombie.class, "minion_pig_zombie", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(EntityMinionSkeleton.class, "minion_skeleton", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(EntityMinionStray.class, "minion_stray", id++, Tartaros.instance, 64, 1, true);
     }
     
     @SideOnly(Side.CLIENT)
