@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityMinionPigZombie;
 import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
+import ladysnake.dissolution.common.entity.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
@@ -68,6 +69,10 @@ public class LivingDeathHandler {
 			} else if (victim instanceof EntitySkeleton) {
 				if (((EntitySkeleton) victim).func_189771_df() == SkeletonType.STRAY)
 					corpse = new EntityMinionStray(victim.world);
+				else if (((EntitySkeleton) victim).func_189771_df() == SkeletonType.WITHER) {
+					corpse = new EntityMinionWitherSkeleton(victim.world);
+					System.out.println("WitherSkeleton killed !");
+				}
 				else
 					corpse = new EntityMinionSkeleton(victim.world);
 			}

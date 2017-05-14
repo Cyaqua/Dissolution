@@ -159,12 +159,10 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
         this.world.spawnEntity(entityarrow);
 	}
 	
-	protected EntityArrow getArrow(float p_190726_1_)
+	protected EntityTippedArrow getArrow(float p_190726_1_)
     {
         EntityTippedArrow entitytippedarrow = new EntityTippedArrow(this.world, this);
         //entitytippedarrow.setEnchantmentEffectsFromEntity(this, p_190726_1_);
-        if(this instanceof EntityMinionStray)
-        	entitytippedarrow.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
         return entitytippedarrow;
     }
 	
@@ -174,7 +172,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 			remainingTicks--;
 			//System.out.println(remainingTicks);
 			if(!this.isCorpse())
-				this.handleSpecialDamage();
+				this.handleSunExposition();
 			if(remainingTicks <= 0){
 				if(!this.isCorpse() && !this.world.isRemote) {
 					for(int i = 0; i < 150; i++) {
@@ -191,7 +189,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 		super.onLivingUpdate();
 	}
 	
-	protected void handleSpecialDamage() {
+	protected void handleSunExposition() {
 		if(this.world.isDaytime() && !this.world.isRemote && 
 				this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ)) &&
 				!this.world.isRaining()) {

@@ -1,24 +1,20 @@
 package ladysnake.dissolution.common.init;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
 import ladysnake.dissolution.client.renders.entities.RenderMinionPigZombie;
 import ladysnake.dissolution.client.renders.entities.RenderMinionSkeleton;
 import ladysnake.dissolution.client.renders.entities.RenderMinionStray;
+import ladysnake.dissolution.client.renders.entities.RenderMinionWitherSkeleton;
 import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
 import ladysnake.dissolution.client.renders.entities.RenderWanderingSoul;
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Tartaros;
 import ladysnake.dissolution.common.entity.EntityMinionPigZombie;
 import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
+import ladysnake.dissolution.common.entity.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -35,6 +31,7 @@ public class ModEntities {
     	EntityRegistry.registerModEntity(EntityMinionZombie.class, "minion_zombie", id++, Tartaros.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(EntityMinionPigZombie.class, "minion_pig_zombie", id++, Tartaros.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(EntityMinionSkeleton.class, "minion_skeleton", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(EntityMinionWitherSkeleton.class, "minion_wither_skeleton", id++, Tartaros.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(EntityMinionStray.class, "minion_stray", id++, Tartaros.instance, 64, 1, true);
     }
     
@@ -45,6 +42,7 @@ public class ModEntities {
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionPigZombie.class, new RenderMinionPigZombie.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, new RenderMinionSkeleton.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, new RenderMinionStray.Factory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionWitherSkeleton.class, new RenderMinionWitherSkeleton.Factory());
     }
 
 }

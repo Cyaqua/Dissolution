@@ -4,6 +4,9 @@ import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.projectile.EntityTippedArrow;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
 public class EntityMinionStray extends EntityMinionSkeleton {
@@ -20,6 +23,13 @@ public class EntityMinionStray extends EntityMinionSkeleton {
 		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 		//this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.applyEntityAI();
+	}
+	
+	@Override
+	protected EntityTippedArrow getArrow(float p_190726_1_) {
+		EntityTippedArrow ret = super.getArrow(p_190726_1_);
+		ret.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
+		return ret;
 	}
 
 }
