@@ -112,7 +112,6 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 		    	checkBreaking = true;
 		    	return;
 		    }
-		    //System.out.println(bp);
 		}
 	}
 	

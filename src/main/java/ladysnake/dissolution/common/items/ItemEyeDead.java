@@ -64,7 +64,7 @@ public class ItemEyeDead extends Item {
 				// (float)(stack.getMaxItemUseDuration() -
 				// entityIn.getItemInUseCount()) / 20.0F));
 				return entityIn == null ? 0.0F
-						: (entityIn.getActiveItemStack() != null && entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
+						: (entityIn.getActiveItemStack() == null || entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
 								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F);
 			}
 		});

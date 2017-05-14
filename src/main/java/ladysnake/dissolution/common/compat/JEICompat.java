@@ -1,11 +1,9 @@
 package ladysnake.dissolution.common.compat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModItems;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
@@ -14,10 +12,11 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IStackHelper;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 @JEIPlugin
@@ -38,6 +37,8 @@ public class JEICompat implements IModPlugin {
 		jeiHelpers = registry.getJeiHelpers();
         stackHelper = jeiHelpers.getStackHelper();
         IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
+        IIngredientBlacklist blacklist = jeiHelpers.getIngredientBlacklist();
+        blacklistStuff(blacklist);
         
 		registry.addRecipeCategories(new CrystallizerRecipeCategory(guiHelper));/*
 		registry.handleRecipes(CrystallizerRecipe.class, (CrystallizerRecipe cr) -> new BlankRecipeWrapper() {
@@ -55,6 +56,11 @@ public class JEICompat implements IModPlugin {
 		
 		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes);
 		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
+	}
+	
+	public void blacklistStuff(IIngredientBlacklist blacklist) {
+		blacklist.<ItemStack>addIngredientToBlacklist(new ItemStack(ModBlocks.SEPULTURE));
+		blacklist.<ItemStack>addIngredientToBlacklist(new ItemStack(ModItems.DEBUG_ITEM));
 	}
 	
 	@Override
