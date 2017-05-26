@@ -73,15 +73,13 @@ public class EventHandlerCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerAttackEntity(AttackEntityEvent event) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
+		if (IncorporealDataHandler.getHandler(event.getEntityPlayer()).isIncorporeal() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable())
 				event.setCanceled(true);
 			return;
 		}
 		if (event.getTarget() instanceof EntityPlayer) {
-			final IIncorporealHandler targetCorp = IncorporealDataHandler.getHandler(event.getTarget());
-			if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative())
+			if (IncorporealDataHandler.getHandler(event.getTarget()).isIncorporeal() && !event.getEntityPlayer().isCreative())
 				if (event.isCancelable())
 					event.setCanceled(true);
 		}
@@ -89,8 +87,7 @@ public class EventHandlerCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityItemPickup(EntityItemPickupEvent event) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
+		if (IncorporealDataHandler.getHandler(event.getEntityPlayer()).isIncorporeal() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable())
 				event.setCanceled(true);
 		}
