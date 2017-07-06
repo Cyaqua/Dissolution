@@ -15,14 +15,13 @@ public class UpdatePacket implements IMessageHandler<UpdateMessage, IMessage>
 	@Override
 	public IMessage onMessage(final UpdateMessage message, MessageContext ctx) 
 	{
-		System.out.println("message get !");
+		//System.out.println("message get !");
 	  // just to make sure that the side is correct
 	  if (ctx.side.isClient())
 	  {
 		  Minecraft.getMinecraft().addScheduledTask(new Runnable()
 			{
 			  public void run() {
-				  System.out.println("a packet has been processed");
 				  final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
 				  playerCorp.setIncorporeal(message.isIncorporeal, Minecraft.getMinecraft().player);
 				  System.out.println("client" + playerCorp);				  

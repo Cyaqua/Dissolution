@@ -2,11 +2,13 @@ package ladysnake.dissolution.common.handlers;
 
 import java.util.Random;
 
+import ibxm.Player;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +32,8 @@ public class PlayerTickHandler {
 
 		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
-
+		
+		
 		playerCorp.tick(event);
 				
 		if (playerCorp.isIncorporeal()) {
@@ -48,16 +51,14 @@ public class PlayerTickHandler {
 					event.player.capabilities.allowFlying = event.player.experienceLevel > 0;
 			}
 
-			if (event.side == Side.CLIENT)
+			if (event.side.isClient())
 				return;
 
 			// Makes the player tangible if he is near 0,0
 			if (event.player.getDistance(0, event.player.posY, 0) < SPAWN_RADIUS_FROM_ORIGIN
 					&& ++ticksSpentNearSpawn >= 100) {
 				playerCorp.setIncorporeal(false, event.player);
-				IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(),
-						event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
-				PacketHandler.net.sendToAll(msg);
+
 				for (int i = 0; i < 50; i++) {
 					double motionX = rand.nextGaussian() * 0.02D;
 					double motionY = rand.nextGaussian() * 0.02D + 1;
@@ -66,8 +67,11 @@ public class PlayerTickHandler {
 							event.player.posX + 0.5D, event.player.posY + 1.0D, event.player.posZ + 0.5D, 1, 0.3D, 0.3D,
 							0.3D, 0.0D, new int[0]);
 				}
+				
 				if (event.player.dimension == -1 && DissolutionConfig.respawnInNether) {
 					BlockPos spawnPos = event.player.getBedLocation(event.player.getSpawnDimension());
+					if(spawnPos == null)
+						spawnPos = event.player.world.getMinecraftServer().worldServerForDimension(0).getSpawnPoint();
 					event.player.setPosition(spawnPos.getX() / 8, spawnPos.getY() / 8, spawnPos.getZ() / 8);
 					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player,
 							event.player.getSpawnDimension());
@@ -77,17 +81,15 @@ public class PlayerTickHandler {
 			if (event.player.experience > 0 && rand.nextBoolean())
 				event.player.experience--;
 			else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
-				event.player.removeExperienceLevel(1);
-		}
+				event.player.addExperienceLevel(-1);
 
-<<<<<<< HEAD
-		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote  && TartarosConfig.respawnInNether) {
-=======
-		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote
-				&& DissolutionConfig.respawnInNether) {
->>>>>>> 8f14c18c1732c6cd36b2dce4e23054b0fae6a79f
-			CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
+
+				if (!playerCorp.isSynced() && !event.player.world.isRemote
+						&& DissolutionConfig.respawnInNether) {
+					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
+				}
 		}
-		playerCorp.setSynced(true);
+		if(event.side.isServer())
+			playerCorp.setSynced(true);
 	}
 }

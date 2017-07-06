@@ -9,6 +9,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModSounds;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -28,6 +29,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -137,7 +139,7 @@ public class EntityWanderingSoul extends EntityMob {
 		if(super.isEntityInvulnerable(source))
 			return true;
 		
-		if (source.getEntity() instanceof EntityPlayer || source.canHarmInCreative()){
+		if (source.getSourceOfDamage() instanceof EntityPlayer || source.canHarmInCreative()){
 			return false;
 		}
 	    return true;
@@ -170,6 +172,20 @@ public class EntityWanderingSoul extends EntityMob {
     public int getMaxSpawnedInChunk() {
     	return 1;
     }
-
+    
+    @Override
+    protected SoundEvent getAmbientSound() {
+    	return ModSounds.lost_soul_ambient.sound;
+    }
+    
+    @Override
+    protected SoundEvent getHurtSound() {
+    	return ModSounds.lost_soul_pain.sound;
+    }
+    
+    @Override
+    protected SoundEvent getDeathSound() {
+    	return ModSounds.lost_soul_death.sound;
+    }
 
 }

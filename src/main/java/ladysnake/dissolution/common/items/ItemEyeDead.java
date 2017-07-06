@@ -5,22 +5,16 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.EntityMinion;
-import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.Helper;
+import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -32,8 +26,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemEyeDead extends Item {
 
@@ -44,24 +36,19 @@ public class ItemEyeDead extends Item {
 		this.setCreativeTab(Dissolution.CREATIVE_TAB);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(50);
-		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":fueled"), new IItemPropertyGetter() {
-			@SideOnly(Side.CLIENT)
-			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
-				// System.out.println(entityIn != null &&
-				// (!Helper.findItem((EntityPlayer)entityIn,
-				// ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F : 0.0F);
-				return entityIn != null	&& (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+		this.addPropertyOverride(
+				new ResourceLocation(Reference.MOD_ID + ":fueled"), 
+				(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) -> 
+				entityIn instanceof EntityPlayer && (!InventorySearchHelper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
 						? 1.0F
-						: 0.0F;
-			}
-		});
-		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), new IItemPropertyGetter() {
-			@SideOnly(Side.CLIENT)
-			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
+						: 0.0F
+		);
+		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), 
+				(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) ->
+				entityIn == null ? 0.0F
+						: (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
+								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F));
 
-				return entityIn == null ? 0.0F : (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F : (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F);
-			}
-		});
 	}
 
 	@Override
@@ -70,33 +57,35 @@ public class ItemEyeDead extends Item {
 		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal() || IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
+		if (IncorporealDataHandler.getHandler(player).isIncorporeal() && !player.isCreative()) return;
 		
-		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
+		ItemStack ammo = InventorySearchHelper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		
-		List<EntityMinion> minions = worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
+		List<EntityMinion> minions = (worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20)));
 		
 		if(minions.isEmpty()) return;
 		
 		boolean used = false;
-		for (EntityMinion m : minions) {
-			if (ammo.isEmpty() && m.isCorpse()) {
-				((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
-				break;
+		if(!(minions instanceof EntityPlayer)){
+			for (EntityMinion m : minions) {
+				if (ammo.isEmpty() && m.isCorpse()) {
+					((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
+					break;
+				}
+				for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
+					Random rand = new Random();
+					double motionX = rand.nextGaussian() * 0.1D;
+					double motionY = rand.nextGaussian() * 0.1D;
+					double motionZ = rand.nextGaussian() * 0.1D;
+					worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY + 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
+				}
+				if(m.isCorpse()) {
+					ammo.shrink(1);
+					used = true;
+				}
+				m.setCorpse(false);
 			}
-			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
-				Random rand = new Random();
-				double motionX = rand.nextGaussian() * 0.1D;
-				double motionY = rand.nextGaussian() * 0.1D;
-				double motionZ = rand.nextGaussian() * 0.1D;
-				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
-			}
-			if(m.isCorpse()) {
-				ammo.shrink(1);
-				used = true;
-			}
-			m.setCorpse(false);
+		
 		}
 		if(used)
 			stack.damageItem(1, player);

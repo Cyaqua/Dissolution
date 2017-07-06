@@ -5,10 +5,10 @@ import net.minecraft.block.ITileEntityProvider;
 public class Reference {
 	public static final String MOD_ID = "dissolution";
 	public static final String MOD_NAME = "Dissolution";
-	public static final String VERSION = "1.0";
+	public static final String VERSION = "0.4.0";
 	public static final String MCVERSION = "[1.11.2]";
 	
-	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	
+//	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	
 	public static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
 	public static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
 	
@@ -19,6 +19,7 @@ public class Reference {
 		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
 		EYE_DEAD("eye_of_the_undead", "itemEyeOfUndead"),
 		GRAND_FAUX("grand_faux", "itemGrandFaux"),
+		SCARAB_OF_ETERNITY("scarab_of_eternity", "itemScarabOfEternity"),
 		SCYTHE_IRON("iron_scythe", "itemIronScythe"),
 		SOULGEM("soul_gem", "itemSoulGem"),
 		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle"),

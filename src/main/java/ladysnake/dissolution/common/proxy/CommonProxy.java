@@ -1,15 +1,18 @@
 package ladysnake.dissolution.common.proxy;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModCrafting;
 import ladysnake.dissolution.common.init.ModEntities;
+import ladysnake.dissolution.common.init.ModFluids;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.init.ModSounds;
 import ladysnake.dissolution.common.init.ModStructure;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -27,13 +30,17 @@ public abstract class CommonProxy {
 	
 	public void preInit() {
 		IncorporealDataHandler.register();
+		SoulInventoryDataHandler.register();
 		ModBlocks.init();
 		ModBlocks.register();
 		ModItems.init();
 		ModItems.register();
-		ModItems.registerOres();
+		ModFluids.RegistrationHandler.registerBlocks();
+		ModFluids.RegistrationHandler.registerItems();
 		ModEntities.register();
 		ModStructure.init();
+		for(ModSounds s : ModSounds.values())
+			GameRegistry.register(s.sound);
 	}
 	
 	public void init() {
@@ -41,6 +48,8 @@ public abstract class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
 		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
 		System.out.println("init");
+		
+		ModItems.registerOres();
 		
 		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");
 		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");

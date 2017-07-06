@@ -5,9 +5,8 @@ import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
@@ -47,7 +46,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
     }
 	
 	@Override
-	public void renderTileEntityAt(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks, int destroyStage) {
+	public void renderTileEntityFast(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks, int destroyStage, net.minecraft.client.renderer.VertexBuffer buffer) {
 		
 		//renderPortalAt(te, x, y, z, partialTicks);
 		
@@ -60,7 +59,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
     	
 		renderSoulPipe(te, x, y, z);
 
-		if(!DissolutionConfig.anchorsXRay || true) return;
+		if(!DissolutionConfig.anchorsXRay) return;
 		
 		if(mc.player.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()), false, true, false) == null)
 			return;
@@ -202,7 +201,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
             {
                 this.bindTexture(END_PORTAL_TEXTURE);
                 flag = true;
-                Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
+                //Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
             }
 /*
             if (j == 1)
@@ -303,7 +302,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 
         if (flag)
         {
-            Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
+            //Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
         }
     }
 	

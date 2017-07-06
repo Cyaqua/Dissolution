@@ -1,26 +1,23 @@
 package ladysnake.dissolution.common.init;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import ladysnake.dissolution.common.Reference;
-<<<<<<< HEAD
-import ladysnake.dissolution.common.items.*;
-=======
-import ladysnake.dissolution.common.Reference.Items;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
 import ladysnake.dissolution.common.items.ItemGrandFaux;
+import ladysnake.dissolution.common.items.ItemScarabOfEternity;
 import ladysnake.dissolution.common.items.ItemScytheIron;
 import ladysnake.dissolution.common.items.ItemSepulture;
 import ladysnake.dissolution.common.items.ItemSoulGem;
 import ladysnake.dissolution.common.items.ItemSoulInABottle;
->>>>>>> 8f14c18c1732c6cd36b2dce4e23054b0fae6a79f
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -31,23 +28,24 @@ public class ModItems {
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static ItemGrandFaux GRAND_FAUX;
 	public static ItemBaseResource BASE_RESOURCE;
+	public static ItemScarabOfEternity LIFE_PROTECTION_RING;
 	public static ItemScytheIron SCYTHE_IRON;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 	public static ItemSepulture SEPULTURE;
-
-
+	
+//	private IForgeRegistry<Item> reg;
 
 	public static void init() {
 		BASE_RESOURCE = new ItemBaseResource();
 		DEBUG_ITEM = new ItemDebug();
 		EYE_OF_THE_UNDEAD = new ItemEyeDead();
-		SCYTHE_IRON = new ItemScytheIron();
 		GRAND_FAUX = new ItemGrandFaux();
+		LIFE_PROTECTION_RING = new ItemScarabOfEternity();
+		SCYTHE_IRON = new ItemScytheIron();
 		SOUL_GEM = new ItemSoulGem();
 		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();
 		SEPULTURE = new ItemSepulture();
-
 	}
 
 	public static void register() {
@@ -55,13 +53,13 @@ public class ModItems {
 		GameRegistry.register(DEBUG_ITEM);
 		GameRegistry.register(EYE_OF_THE_UNDEAD);
 		GameRegistry.register(GRAND_FAUX);
+		GameRegistry.register(LIFE_PROTECTION_RING);
 		GameRegistry.register(SCYTHE_IRON);
 		GameRegistry.register(SOUL_GEM);
 		GameRegistry.register(SOUL_IN_A_BOTTLE);
 		GameRegistry.register(SEPULTURE);
-
 	}
-
+	
 	public static void registerOres() {
 		OreDictionary.registerOre("dustSulfur", ItemBaseResource.resourceFromName("sulfur"));
 		OreDictionary.registerOre("itemCinnabar", ItemBaseResource.resourceFromName("cinnabar"));
@@ -76,6 +74,7 @@ public class ModItems {
 		registerRender(DEBUG_ITEM);
 		registerRender(EYE_OF_THE_UNDEAD);
 		registerRender(GRAND_FAUX);
+		registerRender(LIFE_PROTECTION_RING);
 		registerRender(SCYTHE_IRON);
 		registerRender(SOUL_GEM);
 		registerRender(SOUL_IN_A_BOTTLE);

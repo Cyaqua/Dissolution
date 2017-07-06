@@ -2,6 +2,7 @@ package ladysnake.dissolution.client.proxy;
 
 import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.client.handlers.EventHandlerClient;
+import ladysnake.dissolution.client.models.ModelFluids;
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.init.ModBlocks;
@@ -18,11 +19,10 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void preInit() {
 		super.preInit();
-
-
 		ModBlocks.registerRenders();
 		ModItems.registerRenders();
 		ModEntities.registerRenders();
+		ModelFluids.registerAllModels();
 	}
 	
 	@Override

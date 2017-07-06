@@ -1,5 +1,7 @@
 package ladysnake.dissolution.common.compat;
 
+import java.util.List;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.inventory.GuiCrystallizer;
 import mezz.jei.api.IGuiHelper;
@@ -10,6 +12,7 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;

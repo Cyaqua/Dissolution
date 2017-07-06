@@ -1,5 +1,7 @@
 package ladysnake.dissolution.client.handlers;
 
+import java.lang.reflect.Field;
+
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
@@ -8,31 +10,43 @@ import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
-import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class EventHandlerClient {
 	
-	public static final float SOUL_VERTICAL_SPEED = 0.1f;
+	public static int cameraAnimation = 0;
+	
+	private static final float SOUL_VERTICAL_SPEED = 0.1f;
 	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
+	private static Field highlightingItemStack;
 	private static int refresh = 0;
+	
+	static {
+		highlightingItemStack = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack", "field_92016_l");
+	}
 
 	@SubscribeEvent
 	public void onGameTick(TickEvent event) {
-		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().player.world.isRemote) return;
+		if (Minecraft.getMinecraft().player == null || event.side.isServer()) return;
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-		if(!playerCorp.isSynced() && refresh++%100 == 0){
+		//System.out.println(refresh);
+		if(!playerCorp.isSynced() && refresh++%100 == 0)
+		{
 			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), 
 					Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
@@ -40,10 +54,36 @@ public class EventHandlerClient {
 	}
 	
 	@SubscribeEvent
+	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal()) {
+			GuiIngameForge.renderFood = false;
+			GuiIngameForge.renderHotbar = Minecraft.getMinecraft().player.isCreative();
+		}
+	}
+	
+	@SubscribeEvent
+	public void onRenderGameOverlay(RenderGameOverlayEvent.Post event) {
+		if(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
+				(event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD
+				|| event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)) {
+			GlStateManager.color(1.0F,  1.0F, 1.0F, 1.0F);
+		}
+	}
+	/*
+	@SubscribeEvent
+	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
+		if(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && event.getType() == RenderGameOverlayEvent.ElementType.HEALTH)
+			event.setCanceled(false);
+	}*/
+	
+	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
-		if(event.side == Side.SERVER) 
+		if(event.side.isServer()) 
 			return;
-		if(!(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.PAINFUL_FLIGHT)) 
+		if(cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f)
+			event.player.eyeHeight += 1.8f / 20f;
+			
+		if(DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT) 
 			return;
 		if(IncorporealDataHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
 		

@@ -13,7 +13,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.IModGuiFactory;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
-
+/*
 public class TartarosGuiFactory implements IModGuiFactory {
 
 	@Override
@@ -52,4 +52,4 @@ public class TartarosGuiFactory implements IModGuiFactory {
 		}
 	}
 
-}
+}*/

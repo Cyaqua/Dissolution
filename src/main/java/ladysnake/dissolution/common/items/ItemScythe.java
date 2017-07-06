@@ -1,22 +1,18 @@
 package ladysnake.dissolution.common.items;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Multimap;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.capabilities.SoulTypes;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.Helper;
+import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -25,17 +21,17 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public abstract class ItemScythe extends ItemSword {
+
+	protected float attackSpeed, attackRadius;
+	protected boolean alreadyRunningAOE;
 	
 	public ItemScythe(ToolMaterial material) {
 		super(material);
@@ -54,10 +50,6 @@ public abstract class ItemScythe extends ItemSword {
 		effectiveBlocks.put(Material.LEAVES, 1.5f);
 	}
 
-	protected float attackSpeed, attackRadius;
-	protected boolean alreadyRunningAOE;
-
-	
 	
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
@@ -150,18 +142,19 @@ public abstract class ItemScythe extends ItemSword {
 	
 	/**
 	 * Fills an empty bottle in the wielder's inventory with a soul
-	 * @param p the player wielding this scythe
+	 * @param killer the player wielding this scythe
 	 */
-	public void harvestSoul(EntityPlayer p, EntityLivingBase s) {
-		if(s.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) return;
-		this.fillBottle(p, 1);
+	public void harvestSoul(EntityPlayer killer, EntityLivingBase victim) {
+		if(victim.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) return;
+		if(!(victim instanceof EntityLiving)) return;
+		this.fillBottle(killer, 1, SoulTypes.getSoulFor((EntityLiving)victim));
 	}
 	
-	public void fillBottle(EntityPlayer p, int nb) {
-		ItemStack bottle = Helper.findItem(p, Items.GLASS_BOTTLE);
+	public void fillBottle(EntityPlayer p, int nb, SoulTypes soul) {
+		ItemStack bottle = InventorySearchHelper.findItem(p, Items.GLASS_BOTTLE);
 		if (!bottle.isEmpty()) {
 			bottle.shrink(nb);
-			p.inventory.addItemStackToInventory(new ItemStack(ModItems.SOUL_IN_A_BOTTLE, nb));
+			p.inventory.addItemStackToInventory(ModItems.SOUL_IN_A_BOTTLE.newTypedSoul(soul));
 		}
 	}
 	

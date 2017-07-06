@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common;
 
 
-import ladysnake.dissolution.common.inventory.TartarosTab;
+import ladysnake.dissolution.common.inventory.DissolutionTab;
 import ladysnake.dissolution.common.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.config.Configuration;
@@ -13,8 +13,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.MCVERSION,
-		guiFactory = Reference.GUI_FACTORY)
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.MCVERSION)
 public class Dissolution {
 	
 	public static Configuration config;
@@ -22,7 +21,7 @@ public class Dissolution {
 	@Instance(Reference.MOD_ID)
 	public static Dissolution instance;
 	
-	public static final CreativeTabs CREATIVE_TAB = new TartarosTab();
+	public static final CreativeTabs CREATIVE_TAB = new DissolutionTab();
 	
 	 @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS,serverSide = Reference.SERVER_PROXY_CLASS)
 	 public static CommonProxy proxy;
