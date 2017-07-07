@@ -67,14 +67,19 @@ public class ModBlocks {
     	//registerBlock(RESUSCITATOR);
     }
     
-    private static Item registerBlock(Block block) {
+    static Item registerBlock(Block block) {
+    	return registerBlock(block, true);
+    }
+    
+    static Item registerBlock(Block block, boolean putInCreativeTab) {
     	GameRegistry.register(block);
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
     	GameRegistry.register(item);
-    	block.setCreativeTab(Dissolution.CREATIVE_TAB);
+    	if(putInCreativeTab)
+    		block.setCreativeTab(Dissolution.CREATIVE_TAB);
     	return item;
-}
+    }
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {

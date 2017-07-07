@@ -1,42 +1,56 @@
 package ladysnake.dissolution.common.init;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.google.common.base.Preconditions;
+import org.apache.logging.log4j.LogManager;
 
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.MaterialLiquid;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ModFluids {
+public enum ModFluids {
+	
+	MERCURY("mercury", false,
+			fluid -> fluid.setLuminosity(5).setDensity(1600).setViscosity(1000),
+			BlockFluidMercury::new);
+	// just add new fluids here
 
-	public static final Set<Fluid> FLUIDS = new HashSet<>();
-
-	public static final Set<IFluidBlock> MOD_FLUID_BLOCKS = new HashSet<>();
-
-
-	public static final Fluid NORMAL = createFluid("mercury", true,
-			fluid -> fluid.setLuminosity(10).setDensity(1600).setViscosity(1000),
-			fluid -> new BlockFluidMercury(fluid, new MaterialLiquid(MapColor.LIGHT_BLUE)));
-
-	private static <T extends Block & IFluidBlock> Fluid createFluid(final String name, final boolean hasFlowIcon, final Consumer<Fluid> fluidPropertyApplier, final Function<Fluid, T> blockFactory) {
+	/**The forge fluid associated with this block*/
+	public final Fluid fluid;
+	/**The fluid block*/
+	public final BlockFluidBase fluidBlock;
+	
+	/**The register manager*/
+	static final RegisterManager REGISTRY_MANAGER = new RegisterManager();
+	
+	/**The path to the fluid blockstate*/
+	private static final String FLUID_MODEL_PATH = Reference.MOD_ID + ":" + "fluid";
+	
+	/**
+	 * Creates a fluid
+	 * @param name
+	 * @param hasFlowIcon if set to false, the fluid will use the same texture for flowing and still
+	 * @param fluidPropertyApplier a Consumer that applies various properties to the forge fluid
+	 * @param blockFactory the constructor of the fluid block
+	 */
+	ModFluids(final String name, final boolean hasFlowIcon, final Consumer<Fluid> fluidPropertyApplier, final Function<Fluid, BlockFluidBase> blockFactory) {
 		final String texturePrefix = Reference.MOD_ID + ":" + "blocks/fluid_";
 
 		final ResourceLocation still = new ResourceLocation(texturePrefix + name + "_still");
@@ -47,53 +61,60 @@ public class ModFluids {
 
 		if (useOwnFluid) {
 			fluidPropertyApplier.accept(fluid);
-			MOD_FLUID_BLOCKS.add(blockFactory.apply(fluid));
 		} else {
 			fluid = FluidRegistry.getFluid(name);
 		}
-
-		FLUIDS.add(fluid);
-
-		return fluid;
+		
+		this.fluidBlock = blockFactory.apply(fluid);
+		this.fluid = fluid;
+	}
+	
+	private void registerFluidBlock() {
+		fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
+		fluidBlock.setUnlocalizedName(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
+		ModBlocks.registerBlock(fluidBlock, false);
 	}
 
-	public static class RegistrationHandler {
+	private void registerFluidModel() {
+		final Item item = Item.getItemFromBlock((Block) fluidBlock);
+		if(item == Items.AIR) {
+			LogManager.getLogger().warn("(Dissolution) + " + fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
+			return;
+		}
 
-		public static void registerBlocks() {
-			
-			for (final IFluidBlock fluidBlock : MOD_FLUID_BLOCKS) {
-				final Block block = (Block) fluidBlock;
-				block.setRegistryName(Reference.MOD_ID, "fluid." + fluidBlock.getFluid().getName());
-				block.setUnlocalizedName(Reference.MOD_ID + ":" + fluidBlock.getFluid().getUnlocalizedName());
-				block.setCreativeTab(Dissolution.CREATIVE_TAB);
-				GameRegistry.register(block);
+		ModelBakery.registerItemVariants(item);
+
+		final ModelResourceLocation modelResourceLocation = new ModelResourceLocation(FLUID_MODEL_PATH, fluid.getName());
+		
+		ModelLoader.setCustomMeshDefinition(item, stack -> modelResourceLocation);
+
+		ModelLoader.setCustomStateMapper((Block) fluidBlock, new StateMapperBase() {
+			@Override
+			protected ModelResourceLocation getModelResourceLocation(final IBlockState state) {
+				return modelResourceLocation;
 			}
+		});
+	}
+	
+	public static final class RegisterManager {
+		
+	    public void onRegister() {
+	    	for (final ModFluids modFluid : ModFluids.values())
+	    		modFluid.registerFluidBlock();
+	    	registerFluidContainers();
+		}
+		
+		@SideOnly(Side.CLIENT)
+		public static void registerAllModels() {
+			for(ModFluids mf : ModFluids.values())
+				mf.registerFluidModel();
 		}
 
-		public static void registerItems() {
-						
-			for (final IFluidBlock fluidBlock : MOD_FLUID_BLOCKS) {
-				final Block block = (Block) fluidBlock;
-				final ItemBlock itemBlock = new ItemBlock(block);
-				final ResourceLocation registryName = Preconditions.checkNotNull(block.getRegistryName());
-				itemBlock.setRegistryName(registryName);
-				GameRegistry.register(itemBlock);
-			}
-
-			registerFluidContainers();
+		private void registerFluidContainers() {
+			//FluidRegistry.addBucketForFluid(MERCURY); //Actually we don't because you don't put a magic liquid in a bucket m8
 		}
+		
+		private RegisterManager() {}
 	}
-
-	private static void registerFluidContainers() {
-
-		for (final Fluid fluid : FLUIDS) {
-			registerBucket(fluid);
-		}
-	}
-
-	private static void registerBucket(final Fluid fluid) {
-		FluidRegistry.addBucketForFluid(fluid);
-	}
-
 
 }
