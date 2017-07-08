@@ -20,8 +20,6 @@ public class TileEntityResuscitator extends TileEntity {
 
 	}
 
-
-
 	public void AddItem(ItemStack item) {
 		itemName.add(item);
 	}

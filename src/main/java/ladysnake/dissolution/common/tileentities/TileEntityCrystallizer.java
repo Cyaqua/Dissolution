@@ -2,13 +2,14 @@ package ladysnake.dissolution.common.tileentities;
 
 import java.util.HashMap;
 
+import javax.annotation.Nullable;
+
 import ladysnake.dissolution.common.blocks.BlockCrystallizer;
 import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
 import ladysnake.dissolution.common.inventory.ContainerCrystallizer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -18,15 +19,12 @@ import net.minecraft.inventory.SlotFurnaceFuel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntityLockable;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.datafix.DataFixer;
-import net.minecraft.util.datafix.FixTypes;
-import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -39,7 +37,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     private static final int[] SLOTS_BOTTOM = new int[] {2, 1};
     private static final int[] SLOTS_SIDES = new int[] {1};
     /** The ItemStacks that hold the items currently being used in the crystallizer */
-    private NonNullList<ItemStack> crystallizerItemStacks = NonNullList.<ItemStack>withSize(3, ItemStack.EMPTY);
+    private ItemStack[] crystallizerItemStacks = new ItemStack[3];
     /** The number of ticks that the crystallizer will keep burning */
     private int crystallizerBurnTime;
     /** The number of ticks that a fresh copy of the currently-burning item would keep the crystallizer burning for */
@@ -60,14 +58,14 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
      */
     public int getSizeInventory()
     {
-        return this.crystallizerItemStacks.size();
+        return this.crystallizerItemStacks.length;
     }
 
     public boolean isEmpty()
     {
         for (ItemStack itemstack : this.crystallizerItemStacks)
         {
-            if (!itemstack.isEmpty())
+            if (itemstack != null)
             {
                 return false;
             }
@@ -75,7 +73,6 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
         return true;
     }
-
     
     @Override
     public NBTTagCompound getUpdateTag() {
@@ -99,7 +96,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
      */
     public ItemStack getStackInSlot(int index)
     {
-        return (ItemStack)this.crystallizerItemStacks.get(index);
+        return (ItemStack)this.crystallizerItemStacks[index];
     }
 
     /**
@@ -121,15 +118,14 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, ItemStack stack)
+    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
-        ItemStack itemstack = (ItemStack)this.crystallizerItemStacks.get(index);
-        boolean flag = !stack.isEmpty() && stack.isItemEqual(itemstack) && ItemStack.areItemStackTagsEqual(stack, itemstack);
-        this.crystallizerItemStacks.set(index, stack);
+        boolean flag = stack != null && stack.isItemEqual(this.crystallizerItemStacks[index]) && ItemStack.areItemStackTagsEqual(stack, this.crystallizerItemStacks[index]);
+        this.crystallizerItemStacks[index] = stack;
 
-        if (stack.getCount() > this.getInventoryStackLimit())
+        if (stack != null && stack.stackSize > this.getInventoryStackLimit())
         {
-            stack.setCount(this.getInventoryStackLimit());
+            stack.stackSize = this.getInventoryStackLimit();
         }
 
         if (index == 0 && !flag)
@@ -139,7 +135,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
             this.markDirty();
         }
     }
-
+    
     /**
      * Get the name of this object. For players this returns their username
      */
@@ -161,20 +157,27 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         this.crystallizerCustomName = p_145951_1_;
     }
 
-    public static void registerFixesFurnace(DataFixer fixer)
-    {
-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityCrystallizer.class, new String[] {"Items"}));
-    }
-
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        this.crystallizerItemStacks = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(compound, this.crystallizerItemStacks);
+        NBTTagList nbttaglist = compound.getTagList("Items", 10);
+        this.crystallizerItemStacks = new ItemStack[this.getSizeInventory()];
+
+        for (int i = 0; i < nbttaglist.tagCount(); ++i)
+        {
+            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+            int j = nbttagcompound.getByte("Slot");
+
+            if (j >= 0 && j < this.crystallizerItemStacks.length)
+            {
+                this.crystallizerItemStacks[j] = ItemStack.func_77949_a(nbttagcompound);
+            }
+        }
+
         this.crystallizerBurnTime = compound.getInteger("BurnTime");
         this.cookTime = compound.getInteger("CookTime");
         this.totalCookTime = compound.getInteger("CookTimeTotal");
-        this.currentItemBurnTime = getItemBurnTime((ItemStack)this.crystallizerItemStacks.get(1));
+        this.currentItemBurnTime = getItemBurnTime(this.crystallizerItemStacks[1]);
 
         if (compound.hasKey("CustomName", 8))
         {
@@ -185,10 +188,23 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
-        compound.setInteger("BurnTime", (short)this.crystallizerBurnTime);
-        compound.setInteger("CookTime", (short)this.cookTime);
-        compound.setInteger("CookTimeTotal", (short)this.totalCookTime);
-        ItemStackHelper.saveAllItems(compound, this.crystallizerItemStacks);
+        compound.setInteger("BurnTime", this.crystallizerBurnTime);
+        compound.setInteger("CookTime", this.cookTime);
+        compound.setInteger("CookTimeTotal", this.totalCookTime);
+        NBTTagList nbttaglist = new NBTTagList();
+
+        for (int i = 0; i < this.crystallizerItemStacks.length; ++i)
+        {
+            if (this.crystallizerItemStacks[i] != null)
+            {
+                NBTTagCompound nbttagcompound = new NBTTagCompound();
+                nbttagcompound.setByte("Slot", (byte)i);
+                this.crystallizerItemStacks[i].writeToNBT(nbttagcompound);
+                nbttaglist.appendTag(nbttagcompound);
+            }
+        }
+
+        compound.setTag("Items", nbttaglist);
 
         if (this.hasCustomName())
         {
@@ -207,7 +223,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     }
 
     /**
-     * Furnace isBurning
+     * crystallizer isBurning
      */
     public boolean isBurning()
     {
@@ -235,28 +251,24 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
         if (!this.world.isRemote)
         {
-            ItemStack itemstack = (ItemStack)this.crystallizerItemStacks.get(1);
-
-            if (this.isBurning() || !itemstack.isEmpty() && !((ItemStack)this.crystallizerItemStacks.get(0)).isEmpty())
+            if (this.isBurning() || this.crystallizerItemStacks[1] != null && this.crystallizerItemStacks[0] != null)
             {
                 if (!this.isBurning() && this.canSmelt())
                 {
-                    this.crystallizerBurnTime = getItemBurnTime(itemstack);
+                    this.crystallizerBurnTime = getItemBurnTime(this.crystallizerItemStacks[1]);
                     this.currentItemBurnTime = this.crystallizerBurnTime;
 
                     if (this.isBurning())
                     {
                         flag1 = true;
 
-                        if (!itemstack.isEmpty())
+                        if (this.crystallizerItemStacks[1] != null)
                         {
-                            Item item = itemstack.getItem();
-                            itemstack.shrink(1);
+                            --this.crystallizerItemStacks[1].stackSize;
 
-                            if (itemstack.isEmpty())
+                            if (this.crystallizerItemStacks[1].stackSize == 0)
                             {
-                                ItemStack item1 = item.getContainerItem(itemstack);
-                                this.crystallizerItemStacks.set(1, item1);
+                                this.crystallizerItemStacks[1] = crystallizerItemStacks[1].getItem().getContainerItem(crystallizerItemStacks[1]);
                             }
                         }
                     }
@@ -269,7 +281,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
                     if (this.cookTime == this.totalCookTime)
                     {
                         this.cookTime = 0;
-                        this.totalCookTime = this.getCookTime((ItemStack)this.crystallizerItemStacks.get(0));
+                        this.totalCookTime = this.getCookTime(this.crystallizerItemStacks[0]);
                         this.smeltItem();
                         flag1 = true;
                     }
@@ -287,13 +299,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
             if (flag != this.isBurning())
             {
                 flag1 = true;
-//                IBlockState state1 = getWorld().getBlockState(getPos());
-				BlockCrystallizer.setState(this.isBurning(), this.world, this.pos);
-                System.out.println("Update 1 !");
-                if (getWorld() != null) {
-        	    	IBlockState state = getWorld().getBlockState(getPos());
-        	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-        	    }
+                BlockCrystallizer.setState(this.isBurning(), this.world, this.pos);
             }
         }
 
@@ -319,24 +325,24 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
      */
     private boolean canSmelt()
     {
-        if (((ItemStack)this.crystallizerItemStacks.get(0)).isEmpty())
+        if (((ItemStack)this.crystallizerItemStacks[0])== null)
         {
             return false;
         }
         else
         {
-            ItemStack itemstack = CrystallizerRecipe.getCrystalRecipe((ItemStack)this.crystallizerItemStacks.get(0)).getOutput();
+            ItemStack itemstack = CrystallizerRecipe.getCrystalRecipe((ItemStack)this.crystallizerItemStacks[0]).getOutput();
 
-            if (itemstack.isEmpty())
+            if (itemstack == null)
             {
                 return false;
             }
             else
             {
-                ItemStack itemstack1 = (ItemStack)this.crystallizerItemStacks.get(2);
-                if (itemstack1.isEmpty()) return true;
+                ItemStack itemstack1 = (ItemStack)this.crystallizerItemStacks[2];
+                if (itemstack1== null) return true;
                 if (!itemstack1.isItemEqual(itemstack)) return false;
-                int result = itemstack1.getCount() + itemstack.getCount();
+                int result = itemstack1.stackSize + itemstack.stackSize;
                 return result <= getInventoryStackLimit() && result <= itemstack1.getMaxStackSize(); // Forge fix: make crystallizer respect stack sizes in crystallizer recipes
             }
         }
@@ -349,25 +355,20 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     {
         if (this.canSmelt())
         {
-            ItemStack itemstack = (ItemStack)this.crystallizerItemStacks.get(0);
+            ItemStack itemstack = (ItemStack)this.crystallizerItemStacks[0];
             ItemStack itemstack1 = CrystallizerRecipe.getCrystalRecipe(itemstack).getOutput();
-            ItemStack itemstack2 = (ItemStack)this.crystallizerItemStacks.get(2);
+            ItemStack itemstack2 = (ItemStack)this.crystallizerItemStacks[2];
 
-            if (itemstack2.isEmpty())
+            if (itemstack2== null)
             {
-                this.crystallizerItemStacks.set(2, itemstack1.copy());
+                this.crystallizerItemStacks[2] = itemstack1.copy();
             }
             else if (itemstack2.getItem() == itemstack1.getItem())
             {
-                itemstack2.grow(itemstack1.getCount());
+                itemstack2.stackSize += (itemstack1.stackSize);
             }
 
-            if (itemstack.getItem() == Item.getItemFromBlock(Blocks.SPONGE) && itemstack.getMetadata() == 1 && !((ItemStack)this.crystallizerItemStacks.get(1)).isEmpty() && ((ItemStack)this.crystallizerItemStacks.get(1)).getItem() == Items.BUCKET)
-            {
-                this.crystallizerItemStacks.set(1, new ItemStack(Items.WATER_BUCKET));
-            }
-
-            itemstack.shrink(1);
+            itemstack.stackSize -= (1);
         }
     }
 
@@ -377,7 +378,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
      */
     public static int getItemBurnTime(ItemStack stack)
     {
-        if (stack.isEmpty())
+        if (stack == null)
         {
             return 0;
         }
@@ -425,7 +426,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         }
         else
         {
-            ItemStack itemstack = (ItemStack)this.crystallizerItemStacks.get(1);
+            ItemStack itemstack = (ItemStack)this.crystallizerItemStacks[1];
             return isItemFuel(stack) || SlotFurnaceFuel.isBucket(stack) && itemstack.getItem() != Items.BUCKET;
         }
     }
@@ -471,10 +472,6 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         return new ContainerCrystallizer(playerInventory, this);
     }
 
-    public World GetWorld(){
-        return this.getWorld();
-    }
-
     public int getField(int id)
     {
         switch (id)
@@ -517,13 +514,17 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
     public void clear()
     {
-        this.crystallizerItemStacks.clear();
+        for (int i = 0; i < this.crystallizerItemStacks.length; ++i)
+        {
+            this.crystallizerItemStacks[i] = null;
+        }
     }
 
     net.minecraftforge.items.IItemHandler handlerTop = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.UP);
     net.minecraftforge.items.IItemHandler handlerBottom = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.DOWN);
     net.minecraftforge.items.IItemHandler handlerSide = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.WEST);
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing)
     {

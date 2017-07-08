@@ -33,8 +33,7 @@ public class ItemBaseResource extends Item {
 	}
 
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		if(tab instanceof DissolutionTab)
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
 			for (int i = 0; i < variants.size(); ++i) {
 				subItems.add(new ItemStack(this, 1, i));
 			}

@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Multimap;
 
 import ladysnake.dissolution.common.Dissolution;
@@ -14,7 +12,6 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -101,7 +98,7 @@ public abstract class ItemScythe extends ItemSword {
     }
 	
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced) {
+	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
 		tooltip.add("Two-handed");
 	}
 	

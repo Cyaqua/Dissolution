@@ -2,15 +2,14 @@ package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
-import ladysnake.dissolution.common.tileentities.TileEntityResuscitator;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
@@ -22,24 +21,26 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public abstract class CommonProxy {
 	
 	public void preInit() {
-		MinecraftForge.EVENT_BUS.register(ModBlocks.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(ModItems.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(ModFluids.REGISTRY_MANAGER);
-		MinecraftForge.EVENT_BUS.register(ModSounds.REGISTRY_MANAGER);
-		CapabilityIncorporealHandler.register();
-		CapabilitySoulHandler.register();
-		ModBlocks.INSTANCE.init();
-		ModItems.INSTANCE.init();
+		IncorporealDataHandler.register();
+		SoulInventoryDataHandler.register();
+		ModBlocks.init();
+		ModBlocks.register();
+		ModItems.init();
+		ModItems.register();
+		ModFluids.REGISTRY_MANAGER.onRegister();
 		ModEntities.register();
 		ModStructure.init();
+		for(ModSounds s : ModSounds.values())
+			GameRegistry.register(s.sound);
 	}
 	
 	public void init() {
 		MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
 		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
 		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
+		System.out.println("init");
 		
-		ModItems.INSTANCE.registerOres();
+		ModItems.registerOres();
 		
 		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");
 		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");
@@ -49,6 +50,7 @@ public abstract class CommonProxy {
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
 		PacketHandler.initPackets();
+		ModCrafting.register();
 	}
 	
 	public void postInit() {

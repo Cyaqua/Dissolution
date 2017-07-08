@@ -19,32 +19,26 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.registries.IForgeRegistry;
 
-public final class ModBlocks {
-	
-	/**Used to register stuff*/
-	static final ModBlocks INSTANCE = new ModBlocks();
+public class ModBlocks {
 
 	public static Block ECTOPLASMA;
 	public static BlockEctoplasm ECTOPLASM;
     public static BlockCrystallizer CRYSTALLIZER;
+    public static BlockDriedLava DRIED_LAVA;
     public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
     public static BlockSoulAnchor SOUL_ANCHOR;
     public static BlockMercuryCandle MERCURY_CANDLE;
     public static BlockSulfurCandle SULFUR_CANDLE;
     public static BlockSoulExtractor SOUL_EXTRACTOR;
     public static BlockSepulture SEPULTURE;
+    public static BlockResuscitator RESUSCITATOR;
     
-    private IForgeRegistry<Block> reg;
-
-    public void init() {
+    public static void init() {
     	CRYSTALLIZER = new BlockCrystallizer();
     	ECTOPLASM = new BlockEctoplasm();
     	ECTOPLASMA = new Block(Material.CLOTH);
@@ -59,52 +53,53 @@ public final class ModBlocks {
     	SEPULTURE = new BlockSepulture();
     }
     
-    @SubscribeEvent
-    public void onRegister(RegistryEvent.Register<Block> event) {
-    	reg = event.getRegistry();
+    public static void register() {
     	registerBlock(CRYSTALLIZER);
+    	//registerBlock(DRIED_LAVA);
     	registerBlock(ECTOPLASMA);
     	registerBlock(ECTOPLASM);
     	registerBlock(MERCURIUS_WAYSTONE).setMaxStackSize(1);
     	registerBlock(SOUL_ANCHOR);
     	registerBlock(MERCURY_CANDLE);
     	registerBlock(SULFUR_CANDLE);
-    	reg.register(SEPULTURE);
+    	GameRegistry.register(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
+    	//registerBlock(RESUSCITATOR);
     }
     
-    Item registerBlock(Block block) {
+    static Item registerBlock(Block block) {
     	return registerBlock(block, true);
     }
     
-    Item registerBlock(Block block, boolean addToTab) {
-    	reg.register(block);
+    static Item registerBlock(Block block, boolean putInCreativeTab) {
+    	GameRegistry.register(block);
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
-    	ModItems.blocks.add(item);
-    	if(addToTab)
+    	GameRegistry.register(item);
+    	if(putInCreativeTab)
     		block.setCreativeTab(Dissolution.CREATIVE_TAB);
     	return item;
     }
     
     @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void registerRenders(ModelRegistryEvent event) {
+    public static void registerRenders() {
     	registerRender(CRYSTALLIZER);
+    	//registerRender(DRIED_LAVA);
     	registerRender(SOUL_EXTRACTOR);
     	registerRender(MERCURIUS_WAYSTONE);
     	registerRender(SEPULTURE);
     	registerRender(ECTOPLASM);
     	registerRender(ECTOPLASMA);
     	registerRender(SOUL_ANCHOR);
+
+    	//registerRender(RESUSCITATOR);
+
     	registerRender(MERCURY_CANDLE);
     	registerRender(SULFUR_CANDLE);
     }
     
     @SideOnly(Side.CLIENT)
-    private void registerRender(Block block) {
+    public static void registerRender(Block block) {
     	ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation(Reference.MOD_ID + ":" + block.getUnlocalizedName().toString().substring(5)));
     }
-    
-    private ModBlocks() {}
 }
