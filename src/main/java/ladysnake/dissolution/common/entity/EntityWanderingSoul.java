@@ -83,12 +83,12 @@ public class EntityWanderingSoul extends EntityMob {
                     IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
                     IBlockState iblockstate2 = this.world.getBlockState(blockpos1);
 
-                    if (iblockstate1.getMaterial() == Material.WATER && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(Blocks.FROSTED_ICE, blockpos1, false, EnumFacing.DOWN, (Entity)null))
+                    if (iblockstate1.getMaterial() == Material.WATER && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0) //&& this.world.mayPlace(Blocks.FROSTED_ICE, blockpos1, false, EnumFacing.DOWN, (Entity)null))
                     {
                         this.world.setBlockState(blockpos1, Blocks.FROSTED_ICE.getDefaultState());
                         this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(this.getRNG(), 60, 120));
                     }
-                    else if (iblockstate2.getMaterial() == Material.LAVA && ((Integer)iblockstate2.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(Blocks.MAGMA, blockpos1, false, EnumFacing.DOWN, (Entity)null))
+                    else if (iblockstate2.getMaterial() == Material.LAVA && ((Integer)iblockstate2.getValue(BlockLiquid.LEVEL)).intValue() == 0) //&& this.world.mayPlace(Blocks.MAGMA, blockpos1, false, EnumFacing.DOWN, (Entity)null))
                     {
                         this.world.setBlockState(blockpos1, Blocks.MAGMA.getDefaultState());
                         this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.MAGMA, MathHelper.getInt(this.getRNG(), 60, 120));
@@ -145,7 +145,7 @@ public class EntityWanderingSoul extends EntityMob {
 		if(super.isEntityInvulnerable(source))
 			return true;
 		
-		if (source.getTrueSource() instanceof EntityPlayer || source.canHarmInCreative()){
+		if (source.getSourceOfDamage() instanceof EntityPlayer || source.canHarmInCreative()){
 			return false;
 		}
 	    return true;
@@ -185,7 +185,7 @@ public class EntityWanderingSoul extends EntityMob {
     }
     
     @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
+    protected SoundEvent getHurtSound() {
     	return ModSounds.lost_soul_pain.sound();
     }
     

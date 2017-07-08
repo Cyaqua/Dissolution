@@ -6,7 +6,7 @@ public class Reference {
 	public static final String MOD_ID = "dissolution";
 	public static final String MOD_NAME = "Dissolution";
 	public static final String VERSION = "0.4.0";
-	public static final String MCVERSION = "[1.12]";
+	public static final String MCVERSION = "[1.10]";
 	
 //	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	
 	public static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";

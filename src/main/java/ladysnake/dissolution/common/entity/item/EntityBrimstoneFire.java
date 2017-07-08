@@ -25,7 +25,6 @@ public class EntityBrimstoneFire extends Entity {
         this.setSize(0.25F, 0.25F);
         this.ticksFired = -1;
         this.ignoreFrustumCheck = true;
-        this.updateBlocked = true;
 	}
 	
 	public void fire() {

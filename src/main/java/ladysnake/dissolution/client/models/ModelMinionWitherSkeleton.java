@@ -1,19 +1,12 @@
 package ladysnake.dissolution.client.models;
 
-import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.minion.EntityMinionWitherSkeleton;
-import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.AbstractSkeleton;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

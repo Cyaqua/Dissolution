@@ -67,7 +67,7 @@ public class BlockDriedLava extends BlockIce {
                 {
                     this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
                     worldIn.setBlockState(pos, Blocks.LAVA.getDefaultState());
-                    worldIn.neighborChanged(pos, Blocks.LAVA, pos);
+                    //worldIn.neighborChanged(pos, Blocks.LAVA, pos);
                 }
             }
         }
@@ -112,7 +112,7 @@ public class BlockDriedLava extends BlockIce {
             {
                 this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
                 worldIn.setBlockState(pos, Blocks.LAVA.getDefaultState());
-                worldIn.neighborChanged(pos, Blocks.LAVA, pos);
+                //worldIn.neighborChanged(pos, Blocks.LAVA, pos);
             }
 
             if (p_185681_5_)
@@ -138,6 +138,6 @@ public class BlockDriedLava extends BlockIce {
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return ItemStack.EMPTY;
+        return null;
     }
 }

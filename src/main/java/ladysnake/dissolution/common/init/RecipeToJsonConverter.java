@@ -131,8 +131,8 @@ public class RecipeToJsonConverter {
 			if (stack.getItem().getHasSubtypes() || stack.getItemDamage() != 0) {
 				ret.put("data", stack.getItemDamage());
 			}
-			if (stack.getCount() > 1) {
-				ret.put("count", stack.getCount());
+			if (stack.stackSize > 1) {
+				ret.put("count", stack.stackSize);
 			}
 			
 			if (stack.hasTagCompound()) {

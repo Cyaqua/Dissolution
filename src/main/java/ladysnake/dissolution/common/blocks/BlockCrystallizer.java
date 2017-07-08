@@ -2,6 +2,8 @@ package ladysnake.dissolution.common.blocks;
 
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModBlocks;
@@ -123,8 +125,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote)
 			return true;
 

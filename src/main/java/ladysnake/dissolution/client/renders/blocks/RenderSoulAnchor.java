@@ -7,18 +7,17 @@ import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityBeaconRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.EnumFacing;
@@ -47,7 +46,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
     }
 	
 	@Override
-	public void renderTileEntityFast(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks, int destroyStage, float partial, net.minecraft.client.renderer.BufferBuilder buffer) {
+	public void renderTileEntityFast(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks, int destroyStage, net.minecraft.client.renderer.VertexBuffer buffer) {
 		
 		//renderPortalAt(te, x, y, z, partialTicks);
 		
@@ -81,7 +80,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 		GL11.glEnable(GL11.GL_BLEND);
 	    GlStateManager.color(0.8f, 0.8f, 1f, 1.0f);
 	    Tessellator tessellator = Tessellator.getInstance();
-	    BufferBuilder tes = tessellator.getBuffer();
+	    VertexBuffer tes = tessellator.getBuffer();
 	    
 	    tes.setTranslation(0.0, -Minecraft.getMinecraft().player.eyeHeight, 0.0);
 	    
@@ -233,7 +232,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
             GlStateManager.multMatrix(PROJECTION);
             GlStateManager.multMatrix(MODELVIEW);
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder vertexbuffer = tessellator.getBuffer();
+            VertexBuffer vertexbuffer = tessellator.getBuffer();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
             float f3 = (RANDOM.nextFloat() * 0.5F + 0.1F) * f1;
             float f4 = (RANDOM.nextFloat() * 0.5F + 0.4F) * f1;

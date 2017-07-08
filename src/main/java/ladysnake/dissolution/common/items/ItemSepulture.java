@@ -67,11 +67,11 @@ public class ItemSepulture extends Item {
                     IBlockState iblockstate2 = ModBlocks.SEPULTURE.getDefaultState().withProperty(BlockSepulture.FACING, enumfacing).withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.FOOT);
                     worldIn.setBlockState(pos, iblockstate2, 10);
                     worldIn.setBlockState(blockpos, iblockstate2.withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.HEAD), 10);
-                    worldIn.notifyNeighborsRespectDebug(pos, block, false);
-                    worldIn.notifyNeighborsRespectDebug(blockpos, iblockstate1.getBlock(), false);
+                    worldIn.notifyNeighborsRespectDebug(pos, block);
+                    worldIn.notifyNeighborsRespectDebug(blockpos, iblockstate1.getBlock());
                     SoundType soundtype = iblockstate2.getBlock().getSoundType(iblockstate2, worldIn, pos, player);
                     worldIn.playSound((EntityPlayer)null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    itemstack.shrink(1);
+                    itemstack.stackSize--;
                     return EnumActionResult.SUCCESS;
                 }
                 else

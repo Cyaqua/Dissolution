@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -27,10 +29,13 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -129,50 +134,68 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
 	/**
      * Applies the given player interaction to this Entity.
      */
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
+	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
     	
-    	System.out.println(this);	//TODO this is only for debug
     	if(CapabilityIncorporealHandler.getHandler(player).isIncorporeal() && !player.isCreative())
     		return EnumActionResult.PASS;
-    	
-        ItemStack itemstack = player.getHeldItem(hand);
-
-        if (itemstack.getItem() != Items.NAME_TAG && itemstack.getItem() != ModItems.EYE_OF_THE_UNDEAD)
+    	else if (!this.world.isRemote && !player.isSpectator())
         {
-            if (!this.world.isRemote && !player.isSpectator())
+            EntityEquipmentSlot entityequipmentslot = EntityEquipmentSlot.MAINHAND;
+            boolean flag = stack != null;
+            Item item = flag ? stack.getItem() : null;
+
+            if (flag && item instanceof ItemArmor)
             {
-                EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
-
-                if (itemstack.isEmpty())
-                {
-                    EntityEquipmentSlot entityequipmentslot2 = this.getClickedSlot(vec);
-
-                    if (this.hasItemInSlot(entityequipmentslot2))
-                    {
-                        this.swapItem(player, entityequipmentslot2, itemstack, hand);
-                    }
-                    else 
-                    {
-                    	return EnumActionResult.PASS;
-                    }
-                }
-                else
-                {
-
-                    this.swapItem(player, entityequipmentslot, itemstack, hand);
-                }
-
-                return EnumActionResult.SUCCESS;
+                entityequipmentslot = ((ItemArmor)item).armorType;
             }
-            else
+
+            if (flag && (item == Items.SKULL || item == Item.getItemFromBlock(Blocks.PUMPKIN)))
             {
-                return itemstack.isEmpty() && !this.hasItemInSlot(this.getClickedSlot(vec)) ? EnumActionResult.PASS : EnumActionResult.SUCCESS;
+                entityequipmentslot = EntityEquipmentSlot.HEAD;
             }
+
+            double d0 = 0.1D;
+            double d1 = 0.9D;
+            double d2 = 0.4D;
+            double d3 = 1.6D;
+            EntityEquipmentSlot entityequipmentslot1 = EntityEquipmentSlot.MAINHAND;
+            boolean flag1 = this.isChild();
+            double d4 = flag1 ? vec.yCoord * 2.0D : inert ? vec.zCoord +1 : vec.yCoord;
+
+            if (d4 >= 0.1D && d4 < 0.1D + (flag1 ? 0.8D : 0.45D) && this.getItemStackFromSlot(EntityEquipmentSlot.FEET) != null)
+            {
+                entityequipmentslot1 = EntityEquipmentSlot.FEET;
+            }
+            else if (d4 >= 0.9D + (flag1 ? 0.3D : 0.0D) && d4 < 0.9D + (flag1 ? 1.0D : 0.7D) && this.getItemStackFromSlot(EntityEquipmentSlot.CHEST) != null)
+            {
+                entityequipmentslot1 = EntityEquipmentSlot.CHEST;
+            }
+            else if (d4 >= 0.4D && d4 < 0.4D + (flag1 ? 1.0D : 0.8D) && this.getItemStackFromSlot(EntityEquipmentSlot.LEGS) != null)
+            {
+                entityequipmentslot1 = EntityEquipmentSlot.LEGS;
+            }
+            else if (d4 >= 1.6D && this.getItemStackFromSlot(EntityEquipmentSlot.HEAD) != null)
+            {
+                entityequipmentslot1 = EntityEquipmentSlot.HEAD;
+            }
+
+            boolean flag2 = this.getItemStackFromSlot(entityequipmentslot1) != null;
+            
+            if (flag)
+            {
+                this.swapItem(player, entityequipmentslot, stack, hand);
+            }
+            else if (flag2)
+            {
+                this.swapItem(player, entityequipmentslot1, stack, hand);
+            }
+
+            return EnumActionResult.SUCCESS;
         }
         else
         {
-            return EnumActionResult.PASS;
+            return EnumActionResult.SUCCESS;
         }
     }
 
@@ -181,7 +204,7 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
      * Vanilla code from the armor stand
      * @param raytrace the look vector of the player
      * @return the targeted equipment slot
-     */
+     *//*
     protected EntityEquipmentSlot getClickedSlot(Vec3d raytrace)
     {
         EntityEquipmentSlot entityequipmentslot = EntityEquipmentSlot.MAINHAND;
@@ -207,7 +230,7 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
         }
 
         return entityequipmentslot;
-    }
+    }*/
     
     private void swapItem(EntityPlayer player, EntityEquipmentSlot targetedSlot, ItemStack playerItemStack, EnumHand hand)
     {
@@ -217,20 +240,20 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
         {
 //            if (!itemstack.isEmpty() || (this.disabledSlots & 1 << p_184795_2_.getSlotIndex() + 16) == 0)
             {
-                if (player.capabilities.isCreativeMode && itemstack.isEmpty() && !playerItemStack.isEmpty())
+                if (player.capabilities.isCreativeMode && itemstack == null && playerItemStack != null)
                 {
                     ItemStack itemstack2 = playerItemStack.copy();
-                    itemstack2.setCount(1);
+                    itemstack2.stackSize = 1;
                     this.setItemStackToSlot(targetedSlot, itemstack2);
                 }
-                else if (!playerItemStack.isEmpty() && playerItemStack.getCount() > 1)
+                else if (playerItemStack != null && playerItemStack.stackSize > 1)
                 {
-                    if (itemstack.isEmpty())
+                    if (itemstack == null)
                     {
                         ItemStack itemstack1 = playerItemStack.copy();
-                        itemstack1.setCount(1);
+                        itemstack1.stackSize = 1;
                         this.setItemStackToSlot(targetedSlot, itemstack1);
-                        playerItemStack.shrink(1);
+                        playerItemStack.stackSize--;
                     }
                 }
                 else
@@ -333,7 +356,7 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
 			boolean flag = true;
             ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 
-            if (!itemstack.isEmpty())
+            if (itemstack != null)
             {
                 if (itemstack.isItemStackDamageable())
                 {
@@ -342,7 +365,7 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
                     if (itemstack.getItemDamage() >= itemstack.getMaxDamage())
                     {
                         this.renderBrokenItemStack(itemstack);
-                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
+                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, null);
                     }
                 }
 
@@ -373,7 +396,7 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
 			if(super.isEntityInvulnerable(source))
 				return true;
 			
-			if (source.getTrueSource() instanceof EntityPlayer || source.canHarmInCreative()){
+			if (source.getSourceOfDamage() instanceof EntityPlayer || source.canHarmInCreative()){
 				return false;
 			}
 		    return true;
@@ -482,7 +505,7 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
 	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
 		for(EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values()) {
 			ItemStack itemstack = this.getItemStackFromSlot(entityequipmentslot);
-			if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack))
+			if (itemstack != null)
             {
                 if (itemstack.isItemStackDamageable())
                 {

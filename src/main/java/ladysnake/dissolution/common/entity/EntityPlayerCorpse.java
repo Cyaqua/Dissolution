@@ -8,10 +8,10 @@ import ladysnake.dissolution.client.handlers.EventHandlerClient;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.ISoulHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.ISoulHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
@@ -20,8 +20,8 @@ import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
@@ -46,12 +46,12 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	@Override
-	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
+	protected boolean processInteract(EntityPlayer player, EnumHand hand, ItemStack stack) {
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 
 		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.wowRespawn)) {
 			LivingDeathHandler.transferEquipment(this, player);
-			this.onDeath(DamageSource.GENERIC);
+			this.onDeath(DamageSource.generic);
 			this.setDead();
 			player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
 			player.cameraPitch = 90;
@@ -97,14 +97,11 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	@Override
-	public void setSwingingArms(boolean swingingArms) {}
-
-	@Override
 	protected void initEntityAI() {
 		this.tasks.addTask(0, new EntityAISwimming(this));
 		this.tasks.addTask(2, new EntityAIMinionAttack(this, 1.0D, false));
 		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
+		//this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.applyEntityAI();
 	}
 	
@@ -146,7 +143,9 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	
 	@Override
 	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
-		this.getEquipmentAndArmor().forEach(stack -> this.entityDropItem(stack, 0.5f));
+		this.getEquipmentAndArmor().forEach(stack -> {
+			if(stack != null) this.entityDropItem(stack, 0.5f);
+		});
     }
 	
 	@Override

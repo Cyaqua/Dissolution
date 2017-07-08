@@ -16,9 +16,9 @@ public class CustomTartarosTeleporter {
     {
 		System.out.println("transfering player" + player.getDisplayNameString() + " to dimension " + dimensionIn);
         int i = player.dimension;
-        WorldServer worldserver = player.mcServer.getWorld(player.dimension);
+        WorldServer worldserver = player.mcServer.worldServerForDimension(player.dimension);
         player.dimension = dimensionIn;
-        WorldServer worldserver1 = player.mcServer.getWorld(player.dimension);
+        WorldServer worldserver1 = player.mcServer.worldServerForDimension(player.dimension);
         player.connection.sendPacket(new SPacketRespawn(player.dimension, worldserver1.getDifficulty(), worldserver1.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
         player.mcServer.getPlayerList().updatePermissionLevel(player);
         worldserver.removeEntityDangerously(player);
@@ -48,7 +48,7 @@ public class CustomTartarosTeleporter {
         double d1 = entityIn.posZ * moveFactor;
         double d2 = 8.0D;
         float f = entityIn.rotationYaw;
-        oldWorldIn.profiler.startSection("moving");
+        oldWorldIn.theProfiler.startSection("moving");
 
         if (false && entityIn.dimension == -1)
         {
@@ -97,11 +97,11 @@ public class CustomTartarosTeleporter {
             }
         }
 
-        oldWorldIn.profiler.endSection();
+        oldWorldIn.theProfiler.endSection();
 
         if (lastDimension != 1)
         {
-            oldWorldIn.profiler.startSection("placing");
+            oldWorldIn.theProfiler.startSection("placing");
             d0 = (double)MathHelper.clamp((int)d0, -29999872, 29999872);
             d1 = (double)MathHelper.clamp((int)d1, -29999872, 29999872);
 
@@ -116,7 +116,7 @@ public class CustomTartarosTeleporter {
                 toWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }
 
-            oldWorldIn.profiler.endSection();
+            oldWorldIn.theProfiler.endSection();
         }
 
         entityIn.setWorld(toWorldIn);

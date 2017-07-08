@@ -5,22 +5,17 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.entity.EntityMinion;
-import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.Helper;
+import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -41,16 +36,13 @@ public class ItemEyeDead extends Item {
 		super();
 		this.setUnlocalizedName(Reference.Items.EYE_DEAD.getUnlocalizedName());
 		this.setRegistryName(Reference.Items.EYE_DEAD.getRegistryName());
-		this.setCreativeTab(Tartaros.CREATIVE_TAB);
+		this.setCreativeTab(Dissolution.CREATIVE_TAB);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(50);
 		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":fueled"), new IItemPropertyGetter() {
 			@SideOnly(Side.CLIENT)
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
-				// System.out.println(entityIn != null &&
-				// (!Helper.findItem((EntityPlayer)entityIn,
-				// ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F : 0.0F);
-				return entityIn != null	&& (Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE) != null) 
+				return entityIn instanceof EntityPlayer	&& (InventorySearchHelper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE) != null) 
 						? 1.0F
 						: 0.0F;
 			}
@@ -76,17 +68,16 @@ public class ItemEyeDead extends Item {
 		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal() || IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
+		if (CapabilityIncorporealHandler.getHandler(player).isIncorporeal()) return;
 		
-		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
+		ItemStack ammo = InventorySearchHelper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		
-		List<EntityMinion> minions = worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
+		List<AbstractMinion> minions = worldIn.getEntitiesWithinAABB(AbstractMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
 
 		if(minions.isEmpty()) return;
 		
 		boolean used = false;
-		for (EntityMinion m : minions) {
+		for (AbstractMinion m : minions) {
 			if (ammo == null && m.isCorpse()) {
 				((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]));
 				break;

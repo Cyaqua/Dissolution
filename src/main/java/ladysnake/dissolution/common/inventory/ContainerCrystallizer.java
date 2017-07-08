@@ -168,7 +168,7 @@ public class ContainerCrystallizer extends Container {
                 return null;
             }
 
-            slot.func_82870_a(playerIn, itemstack1);
+            slot.onPickupFromSlot(playerIn, itemstack1);
         }
 
         return itemstack;

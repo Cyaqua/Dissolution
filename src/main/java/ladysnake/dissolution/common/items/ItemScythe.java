@@ -53,13 +53,13 @@ public abstract class ItemScythe extends ItemSword {
 	
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
-		return !entityLiving.getHeldItemOffhand().isEmpty();
+		return entityLiving.getHeldItemOffhand() != null;
 	}
 	
 	@Override
 	public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
 		stack.damageItem(1, attacker);
-		return !attacker.getHeldItemOffhand().isEmpty();
+		return attacker.getHeldItemOffhand() != null;
 	}
 	
 	@Override
@@ -70,7 +70,7 @@ public abstract class ItemScythe extends ItemSword {
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target)
     {
-        if(!player.getHeldItemOffhand().isEmpty()) return true;
+        if(player.getHeldItemOffhand() != null) return true;
         if(alreadyRunningAOE) return false;
         Integer initialCooldown = new Integer(100);
         player.spawnSweepParticles();
@@ -152,8 +152,8 @@ public abstract class ItemScythe extends ItemSword {
 	
 	public void fillBottle(EntityPlayer p, int nb, SoulTypes soul) {
 		ItemStack bottle = InventorySearchHelper.findItem(p, Items.GLASS_BOTTLE);
-		if (!bottle.isEmpty()) {
-			bottle.shrink(nb);
+		if (bottle != null) {
+			bottle.stackSize -= nb;
 			p.inventory.addItemStackToInventory(ModItems.SOUL_IN_A_BOTTLE.newTypedSoul(soul));
 		}
 	}

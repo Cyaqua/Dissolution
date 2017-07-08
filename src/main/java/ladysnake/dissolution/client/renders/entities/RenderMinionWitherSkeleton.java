@@ -4,26 +4,13 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.client.models.ModelMinionSkeleton;
-import ladysnake.dissolution.client.models.ModelMinionStray;
 import ladysnake.dissolution.client.models.ModelMinionWitherSkeleton;
-import ladysnake.dissolution.common.entity.EntityWanderingSoul;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
-import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
-import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
 import ladysnake.dissolution.common.entity.minion.EntityMinionWitherSkeleton;
-import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
-import net.minecraft.client.renderer.entity.layers.LayerStrayClothing;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;

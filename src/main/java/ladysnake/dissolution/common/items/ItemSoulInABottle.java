@@ -4,8 +4,8 @@ import java.util.List;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.capabilities.Soul;
-import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
 import ladysnake.dissolution.common.capabilities.SoulTypes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -40,16 +40,16 @@ public class ItemSoulInABottle extends Item {
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World worldIn, EntityPlayer playerIn, EnumHand handIn) {
 		ItemStack stack = playerIn.getHeldItem(handIn);
 		Soul soul = getSoul(stack);
-		SoulInventoryDataHandler.getHandler(playerIn).addSoul(soul);
-		stack.shrink(1);
+		CapabilitySoulHandler.getHandler(playerIn).addSoul(soul);
+		stack.stackSize--;
 		return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
 	}
 	
 	public Soul getSoul(ItemStack stack) {
-		NBTTagCompound soulNBT = stack.getSubCompound("soul");
+		NBTTagCompound soulNBT = stack.getSubCompound("soul", false);
 		if(soulNBT != null)
 			return Soul.readFromNBT(soulNBT);
 		return Soul.UNDEFINED;

@@ -251,9 +251,9 @@ public class ModelPlayerCorpse extends ModelBiped{
     }
 
     @Override
-    public void setVisible(boolean visible)
+    public void setInvisible(boolean visible)
     {
-        super.setVisible(visible);
+        super.setInvisible(visible);
         this.bipedLeftArmwear.showModel = visible;
         this.bipedRightArmwear.showModel = visible;
         this.bipedLeftLegwear.showModel = visible;

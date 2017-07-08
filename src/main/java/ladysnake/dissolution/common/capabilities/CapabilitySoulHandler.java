@@ -160,7 +160,8 @@ public class CapabilitySoulHandler {
 			final NBTTagCompound tag = (NBTTagCompound) nbt;
 			NBTTagList list = tag.getTagList("soulInventory", 10);
 			instance.getSoulList().clear();
-			list.forEach(s -> instance.addSoul(Soul.readFromNBT((NBTTagCompound) s)));
+			for(int i = 0; i < list.tagCount(); i++)
+				instance.addSoul(Soul.readFromNBT((NBTTagCompound) list.getCompoundTagAt(i)));
 		}
 		
 	}

@@ -1,13 +1,8 @@
 package ladysnake.dissolution.common.handlers;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Iterator;
-
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.item.EntityItemWaystone;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
@@ -23,17 +18,15 @@ import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import ladysnake.dissolution.common.items.ItemScythe;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntityStray;
-import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.SkeletonType;
+import net.minecraft.entity.monster.ZombieType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -44,14 +37,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import scala.actors.threadpool.Arrays;
 
 public class LivingDeathHandler {
 	
-	private static Method destroyVanishingCursedItems;
+	//private static Method destroyVanishingCursedItems;
 	
 	static {
-		destroyVanishingCursedItems = ReflectionHelper.findMethod(EntityPlayer.class, "destroyVanishingCursedItems", "func_190776_cN");
+		//destroyVanishingCursedItems = ReflectionHelper.findMethod(EntityPlayer.class, "destroyVanishingCursedItems", "func_190776_cN");
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -59,7 +52,7 @@ public class LivingDeathHandler {
 		if (event.getEntity() instanceof EntityPlayer)
 			this.handlePlayerDeath(event);
 
-		if (event.getSource().getTrueSource() instanceof EntityPlayer)
+		if (event.getSource().getSourceOfDamage() instanceof EntityPlayer)
 			this.handlePlayerKill(event);
 	}
 	
@@ -82,15 +75,15 @@ public class LivingDeathHandler {
 			body.setCustomNameTag(p.getName());
 
 			boolean flag = false;
-			if(event.getSource().getTrueSource() instanceof EntityPlayer) {
-				EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
-				if(!InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
+			if(event.getSource().getSourceOfDamage() instanceof EntityPlayer) {
+				EntityPlayer killer = (EntityPlayer) event.getSource().getSourceOfDamage();
+				if(InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD) != null)
 					flag = true;
 			}
 			
 			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.LIFE_PROTECTION_RING);
-			if(!lifeProtectionRing.isEmpty()) {
-				p.inventory.setInventorySlotContents(p.inventory.getSlotFor(lifeProtectionRing), ItemStack.EMPTY);
+			if(lifeProtectionRing != null) {
+				p.inventory.setInventorySlotContents(p.inventory.getSlotFor(lifeProtectionRing), null);
 				flag = true;
 			}
 
@@ -100,7 +93,7 @@ public class LivingDeathHandler {
 				
 				if(flag) {
 					transferEquipment(p, body);
-					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
+					body.setInventory(new InventoryPlayerCorpse(Arrays.asList(p.inventory.mainInventory), body));
 					p.inventory.clear();
 				}
 			}
@@ -146,7 +139,7 @@ public class LivingDeathHandler {
             }
             else
             {
-                player.mcServer.getPlayerList().sendMessage(player.getCombatTracker().getDeathMessage());
+                player.mcServer.getPlayerList().sendChatMsg(player.getCombatTracker().getDeathMessage());
             }
         }
 
@@ -154,11 +147,13 @@ public class LivingDeathHandler {
         {
         	player.captureDrops = true;
         	player.capturedDrops.clear();
-            try {
+            /*
+        	try {
 				destroyVanishingCursedItems.invoke(player);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
+        	*/
             player.inventory.dropAllItems();
 
             net.minecraftforge.event.entity.player.PlayerDropsEvent event = new net.minecraftforge.event.entity.player.PlayerDropsEvent(player, cause, player.capturedDrops, false);
@@ -178,17 +173,17 @@ public class LivingDeathHandler {
         }
 
         EntityLivingBase entitylivingbase = player.getAttackingEntity();
-
+        
         if (entitylivingbase != null)
         {
-            EntityList.EntityEggInfo entitylist$entityegginfo = EntityList.ENTITY_EGGS.get(EntityList.getKey(entitylivingbase));
+            EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.ENTITY_EGGS.get(EntityList.getEntityString(entitylivingbase));
 
             if (entitylist$entityegginfo != null)
             {
                 player.addStat(entitylist$entityegginfo.entityKilledByStat);
             }
 
-            //entitylivingbase.func_191956_a(player, player.scoreValue, cause);
+            entitylivingbase.addToPlayerScore(player, player.getScore());
         }
 
         player.clearActivePotions();
@@ -200,7 +195,7 @@ public class LivingDeathHandler {
 	}
 	
 	protected void handlePlayerKill(LivingDeathEvent event) {
-		EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
+		EntityPlayer killer = (EntityPlayer) event.getSource().getSourceOfDamage();
 		EntityLivingBase victim = event.getEntityLiving();
 		
 		if (killer.getHeldItemMainhand().getItem() instanceof ItemScythe) {
@@ -208,20 +203,23 @@ public class LivingDeathHandler {
 		}
 
 		ItemStack eye = InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
-		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
+		if (killer.world.rand.nextInt(1) == 0 && eye != null && !killer.world.isRemote) {
 
 			AbstractMinion corpse = null;
 			
 			if(victim instanceof EntityPigZombie) {
 				corpse = new EntityMinionPigZombie(victim.world, ((EntityZombie)victim).isChild());
 			} else if (victim instanceof EntityZombie) {
-				corpse = new EntityMinionZombie(victim.world, victim instanceof EntityHusk, ((EntityZombie)victim).isChild());
+				corpse = new EntityMinionZombie(victim.world, ((EntityZombie)victim).getZombieType() == ZombieType.HUSK, ((EntityZombie)victim).isChild());
 			} else if (victim instanceof EntitySkeleton) {
-				corpse = new EntityMinionSkeleton(victim.world);
-			} else if(victim instanceof EntityStray){
-				corpse = new EntityMinionStray(victim.world);
-			} else if(victim instanceof EntityWitherSkeleton){
-				corpse = new EntityMinionWitherSkeleton(victim.world);
+				if (((EntitySkeleton) victim).getSkeletonType() == SkeletonType.STRAY)
+					corpse = new EntityMinionStray(victim.world);
+				else if (((EntitySkeleton) victim).getSkeletonType() == SkeletonType.WITHER) {
+					corpse = new EntityMinionWitherSkeleton(victim.world);
+					System.out.println("WitherSkeleton killed !");
+				}
+				else
+					corpse = new EntityMinionSkeleton(victim.world);
 			}
 
 			if (corpse != null) {
@@ -237,21 +235,23 @@ public class LivingDeathHandler {
 	public static void transferEquipment(EntityLivingBase source, EntityLivingBase dest) {
 		for (ItemStack stuff : source.getEquipmentAndArmor()) {
 			EntityEquipmentSlot slot = null;
-			if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, source))
-				slot = EntityEquipmentSlot.HEAD;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, source))
-				slot = EntityEquipmentSlot.CHEST;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.LEGS, source))
-				slot = EntityEquipmentSlot.LEGS;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, source))
-				slot = EntityEquipmentSlot.FEET;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, source) && !stuff.isEmpty())
-				slot = EntityEquipmentSlot.MAINHAND;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && !stuff.isEmpty())
-				slot = EntityEquipmentSlot.OFFHAND;
-			if(slot != null) {
-				dest.setItemStackToSlot(slot, stuff);
-				source.setItemStackToSlot(slot, ItemStack.EMPTY);
+			if(stuff != null) {
+				if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, source))
+					slot = EntityEquipmentSlot.HEAD;
+				else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, source))
+					slot = EntityEquipmentSlot.CHEST;
+				else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.LEGS, source))
+					slot = EntityEquipmentSlot.LEGS;
+				else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, source))
+					slot = EntityEquipmentSlot.FEET;
+				else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, source) && stuff != null)
+					slot = EntityEquipmentSlot.MAINHAND;
+				else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && stuff != null)
+					slot = EntityEquipmentSlot.OFFHAND;
+				if(slot != null) {
+					dest.setItemStackToSlot(slot, stuff);
+					source.setItemStackToSlot(slot, null);
+				}
 			}
 		}
 	}

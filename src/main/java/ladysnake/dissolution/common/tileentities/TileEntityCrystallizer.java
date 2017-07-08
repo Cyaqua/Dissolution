@@ -170,7 +170,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
             if (j >= 0 && j < this.crystallizerItemStacks.length)
             {
-                this.crystallizerItemStacks[j] = ItemStack.func_77949_a(nbttagcompound);
+                this.crystallizerItemStacks[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
             }
         }
 
@@ -524,7 +524,6 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     net.minecraftforge.items.IItemHandler handlerBottom = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.DOWN);
     net.minecraftforge.items.IItemHandler handlerSide = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.WEST);
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing)
     {

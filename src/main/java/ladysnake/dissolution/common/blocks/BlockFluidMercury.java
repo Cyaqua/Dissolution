@@ -43,7 +43,7 @@ public class BlockFluidMercury extends BlockFluidClassic {
 				if (CapabilityIncorporealHandler.getHandler(player).isIncorporeal()) {
 					
 					if(!world.isRemote)
-						world.playSound(null, player.getPosition(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.HOSTILE, 9.0F, 0.8F + ran.nextFloat() * 0.3F);
+						world.playSound(null, player.getPosition(), SoundEvents.ENTITY_LIGHTNING_IMPACT, SoundCategory.HOSTILE, 9.0F, 0.8F + ran.nextFloat() * 0.3F);
 					CapabilityIncorporealHandler.getHandler(player).setIncorporeal(false, player);
 					
 				}

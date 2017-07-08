@@ -46,8 +46,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
 		if(playerCorp.isIncorporeal()){
 			playerCorp.setIncorporeal(false, playerIn);
@@ -83,7 +82,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 	
 	public void placeSoulAnchor(World worldIn, BlockPos pos, Entity placer) {
 		if (worldIn.provider.getDimensionType().getId() != -1) {
-			WorldServer worldservernether = worldIn.getMinecraftServer().getWorld(-1);
+			WorldServer worldservernether = worldIn.getMinecraftServer().worldServerForDimension(-1);
 		    BlockPos bp = getAnchorBaseSpawnPos(worldservernether, pos);
 		    if(bp.getY() > 0)  {
 		    	BlockSoulAnchor.scheduledBP.add(pos);
@@ -94,7 +93,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 		    }
 		    else {
 		    	if(placer instanceof EntityPlayer) {
-		    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".cannotplace", new Object[0]), true);
+		    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".cannotplace", new Object[0]));
 		    		((EntityPlayer)placer).inventory.addItemStackToInventory(new ItemStack(this));
 		    	}
 		    	WorldServer worldserveroverworld = (WorldServer)worldIn;
@@ -160,7 +159,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 	}
 	
 	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
 		addCollisionBoxToList(pos, entityBox, collidingBoxes, COLLISION_BOX);
 	}
@@ -182,7 +181,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 			return;
 		
 		BlockPos bp = new BlockPos(pos.getX()/8, 120, pos.getZ()/8);
-		WorldServer worldserver = worldIn.getMinecraftServer().getWorld(-1);
+		WorldServer worldserver = worldIn.getMinecraftServer().worldServerForDimension(-1);
 		while((worldserver.getBlockState(bp) != ModBlocks.SOUL_ANCHOR.getDefaultState()) && bp.getY() > 0)
 	    	bp = bp.down();
 		if(bp.getY() > 0)

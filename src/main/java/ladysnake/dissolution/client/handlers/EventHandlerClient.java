@@ -37,7 +37,7 @@ public class EventHandlerClient {
 	private static int refresh = 0;
 	
 	static {
-		highlightingItemStack = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack");
+		//highlightingItemStack = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack");
 	}
 
 	@SubscribeEvent

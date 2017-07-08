@@ -1,5 +1,7 @@
 package ladysnake.dissolution.common.blocks;
 
+import javax.annotation.Nullable;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import ladysnake.dissolution.common.tileentities.TileEntityResuscitator;
@@ -9,6 +11,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -27,21 +30,21 @@ public class BlockResuscitator extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    {
 
 		TileEntity te = worldIn.getTileEntity(pos);
 		if (te instanceof TileEntityResuscitator) {
 			TileEntityResuscitator resuscitator = (TileEntityResuscitator) te;
 
-			if (!playerIn.isSneaking() && playerIn.getHeldItem(hand).isEmpty() == false) {
+			if (!playerIn.isSneaking() && playerIn.getHeldItem(hand) != null) {
 				resuscitator.AddItem(playerIn.getHeldItem(hand));
-			} else if(!playerIn.getHeldItem(hand).isEmpty()){
+			} else if(!(playerIn.getHeldItem(hand) == null)){
 				resuscitator.RemoveItem(playerIn.getHeldItem(hand));
 			}
 			System.out.println("items : " + resuscitator.itemName);
 		}
-		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 
 	public static TileEntityResuscitator getTE(IBlockAccess world, BlockPos pos) {

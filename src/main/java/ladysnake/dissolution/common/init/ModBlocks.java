@@ -62,7 +62,7 @@ public class ModBlocks {
     	registerBlock(SOUL_ANCHOR);
     	registerBlock(MERCURY_CANDLE);
     	registerBlock(SULFUR_CANDLE);
-    	GameRegistry.register(SEPULTURE);
+    	registerBlock(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
     	//registerBlock(RESUSCITATOR);
     }
@@ -83,19 +83,19 @@ public class ModBlocks {
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
-    	registerRender(CRYSTALLIZER);
-    	//registerRender(DRIED_LAVA);
-    	registerRender(SOUL_EXTRACTOR);
-    	registerRender(MERCURIUS_WAYSTONE);
-    	registerRender(SEPULTURE);
-    	registerRender(ECTOPLASM);
-    	registerRender(ECTOPLASMA);
-    	registerRender(SOUL_ANCHOR);
-
-    	//registerRender(RESUSCITATOR);
-
-    	registerRender(MERCURY_CANDLE);
-    	registerRender(SULFUR_CANDLE);
+    	try {
+	    	registerRender(CRYSTALLIZER);
+	    	registerRender(SOUL_EXTRACTOR);
+	    	registerRender(MERCURIUS_WAYSTONE);
+	    	registerRender(SEPULTURE);
+	    	registerRender(ECTOPLASM);
+	    	registerRender(ECTOPLASMA);
+	    	registerRender(SOUL_ANCHOR);
+	    	registerRender(MERCURY_CANDLE);
+	    	registerRender(SULFUR_CANDLE);
+    	} catch (NullPointerException e) {
+    		e.printStackTrace();
+    	}
     }
     
     @SideOnly(Side.CLIENT)

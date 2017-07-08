@@ -39,7 +39,7 @@ public class BossAiAttackBrimstoneFires extends EntityAIBase {
 	}
 	
 	@Override
-	public boolean shouldContinueExecuting() {
+	public boolean continueExecuting() {
 		return attackTicks <= (MAX_FIRES + 1) * PAUSE;
 	}
 	

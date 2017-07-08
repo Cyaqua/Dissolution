@@ -62,7 +62,7 @@ public class EntityMawOfTheVoid extends EntityCreature {
 		}
 		
 		@Override
-		public boolean shouldContinueExecuting() {
+		public boolean continueExecuting() {
 //			System.out.println("continueExecuting");
 			return ++i < 2000 || true;
 		}

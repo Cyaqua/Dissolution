@@ -30,20 +30,20 @@ public final class InventorySearchHelper {
 	 *         item
 	 */
 	public static ItemStack findItem(EntityPlayer player, Item item) {
-		if ((player.getHeldItem(EnumHand.OFF_HAND)).getItem() == item) {
+		if (player.getHeldItem(EnumHand.OFF_HAND) != null && (player.getHeldItem(EnumHand.OFF_HAND)).getItem() == item) {
 			return player.getHeldItem(EnumHand.OFF_HAND);
-		} else if ((player.getHeldItem(EnumHand.MAIN_HAND)).getItem() == item) {
+		} else if (player.getHeldItem(EnumHand.MAIN_HAND) != null && (player.getHeldItem(EnumHand.MAIN_HAND)).getItem() == item) {
 			return player.getHeldItem(EnumHand.MAIN_HAND);
 		} else {
 			for (int i = 0; i < player.inventory.getSizeInventory(); ++i) {
 				ItemStack itemstack = player.inventory.getStackInSlot(i);
 
-				if (itemstack.getItem() == item) {
+				if (itemstack != null && itemstack.getItem() == item) {
 					return itemstack;
 				}
 			}
 
-			return ItemStack.EMPTY;
+			return null;
 		}
 	}
 

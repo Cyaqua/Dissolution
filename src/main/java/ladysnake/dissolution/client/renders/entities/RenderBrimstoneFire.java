@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.item.EntityBrimstoneFire;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -59,7 +59,7 @@ public class RenderBrimstoneFire extends RenderEntity {
         float scale = 1;
         
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        VertexBuffer VertexBuffer = tessellator.getBuffer();
         
         GlStateManager.glTexParameteri(3553, 10242, 10497);
         GlStateManager.glTexParameteri(3553, 10243, 10497);
@@ -80,13 +80,13 @@ public class RenderBrimstoneFire extends RenderEntity {
         Vec3d vec3d2 = vec3d.subtract(vec3d1);
         double d0 = vec3d2.lengthVector() + 1.0D;
         vec3d2 = vec3d2.normalize();
-        float f5 = (float)Math.acos(vec3d2.y);
-        float f6 = (float)Math.atan2(vec3d2.z, vec3d2.x);
+        float f5 = (float)Math.acos(vec3d2.yCoord);
+        float f6 = (float)Math.atan2(vec3d2.zCoord, vec3d2.xCoord);
         GlStateManager.rotate((((float)Math.PI / 2F) + -f6) * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(f5 * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
         int i = 1;
         double d1 = (double)f2 * 0.05D * -1.5D;
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        VertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         float f7 = scale * scale;
         int j = 64 + (int)(f7 * 191.0F);
         int k = 32 + (int)(f7 * 191.0F);
@@ -113,14 +113,14 @@ public class RenderBrimstoneFire extends RenderEntity {
         double d21 = 0.4999D;
         double d22 = (double)(-1.0F + f3);
         double d23 = d0 * 2.5D + d22;
-        bufferbuilder.pos(d12, d0, d13).tex(0.4999D, d23).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d12, 0.0D, d13).tex(0.4999D, d22).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d14, 0.0D, d15).tex(0.0D, d22).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d14, d0, d15).tex(0.0D, d23).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d16, d0, d17).tex(0.4999D, d23).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d16, 0.0D, d17).tex(0.4999D, d22).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d18, 0.0D, d19).tex(0.0D, d22).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d18, d0, d19).tex(0.0D, d23).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d12, d0, d13).tex(0.4999D, d23).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d12, 0.0D, d13).tex(0.4999D, d22).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d14, 0.0D, d15).tex(0.0D, d22).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d14, d0, d15).tex(0.0D, d23).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d16, d0, d17).tex(0.4999D, d23).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d16, 0.0D, d17).tex(0.4999D, d22).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d18, 0.0D, d19).tex(0.0D, d22).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d18, d0, d19).tex(0.0D, d23).color(j, k, l, 255).endVertex();
         double d24 = 0.0D;
 
         if (entity.ticksExisted % 2 == 0)
@@ -128,10 +128,10 @@ public class RenderBrimstoneFire extends RenderEntity {
             d24 = 0.5D;
         }
         /*
-        bufferbuilder.pos(d4, d0, d5).tex(0.5D, d24 + 0.5D).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d6, d0, d7).tex(1.0D, d24 + 0.5D).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d10, d0, d11).tex(1.0D, d24).color(j, k, l, 255).endVertex();
-        bufferbuilder.pos(d8, d0, d9).tex(0.5D, d24).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d4, d0, d5).tex(0.5D, d24 + 0.5D).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d6, d0, d7).tex(1.0D, d24 + 0.5D).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d10, d0, d11).tex(1.0D, d24).color(j, k, l, 255).endVertex();
+        VertexBuffer.pos(d8, d0, d9).tex(0.5D, d24).color(j, k, l, 255).endVertex();
         */
         tessellator.draw();
         GlStateManager.popMatrix();

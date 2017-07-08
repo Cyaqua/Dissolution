@@ -2,11 +2,9 @@ package ladysnake.dissolution.client.renders.entities;
 
 import ladysnake.dissolution.client.models.ModelMinionStray;
 import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
-import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.entity.monster.EntityStray;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
