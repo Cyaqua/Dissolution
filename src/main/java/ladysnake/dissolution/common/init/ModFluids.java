@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import net.minecraft.block.Block;
@@ -87,7 +88,7 @@ public enum ModFluids {
 	private void registerFluidModel() {
 		final Item item = Item.getItemFromBlock((Block) fluidBlock);
 		if(item == null) {
-			LogManager.getLogger().warn("(Dissolution) + " + fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
+			Dissolution.LOGGER.warn(fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
 			return;
 		}
 

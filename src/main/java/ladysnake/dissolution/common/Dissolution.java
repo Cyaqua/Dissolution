@@ -1,6 +1,9 @@
 package ladysnake.dissolution.common;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class Dissolution {
 	
 	public static Configuration config;
+	public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
 	
 	@Instance(Reference.MOD_ID)
 	public static Dissolution instance;

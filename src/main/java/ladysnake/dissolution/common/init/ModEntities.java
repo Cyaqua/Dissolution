@@ -47,18 +47,5 @@ public class ModEntities {
     	EntityRegistry.registerModEntity(EntityMawOfTheVoid.class, "maw_of_the_void", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(EntityBrimstoneFire.class, "brimstone_fire", id++, Dissolution.instance, 32, 1, false);
     }
-    
-    @SideOnly(Side.CLIENT)
-    public static void registerRenders() {
-    	RenderingRegistry.registerEntityRenderingHandler(EntityWanderingSoul.class, new RenderWanderingSoul.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, renderManager -> new RenderMinionZombie(renderManager));
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionPigZombie.class, new RenderMinionPigZombie.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, new RenderMinionSkeleton.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, new RenderMinionStray.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionWitherSkeleton.class, new RenderMinionWitherSkeleton.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityPlayerCorpse.class, renderManager -> new RenderPlayerCorpse(renderManager));
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped(renderManager, new ModelBiped(), 1.0f));
-    	RenderingRegistry.registerEntityRenderingHandler(EntityBrimstoneFire.class, RenderBrimstoneFire::new);
-    }
 
 }
