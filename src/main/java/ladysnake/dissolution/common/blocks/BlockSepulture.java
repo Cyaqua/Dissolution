@@ -3,11 +3,9 @@ package ladysnake.dissolution.common.blocks;
 import java.util.Random;
 
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.networking.IncorporealMessage;
-import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
@@ -34,7 +32,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -78,10 +75,10 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
+		IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
 		if (playerCorp.isIncorporeal()) {
 			this.getTE(worldIn, pos).setDeathMessage(playerCorp.getLastDeathMessage());
-			playerCorp.setIncorporeal(false, playerIn);
+			playerCorp.setIncorporeal(false);
 		} else {
 			try {
 				//System.out.println(this.getTE(worldIn, pos));

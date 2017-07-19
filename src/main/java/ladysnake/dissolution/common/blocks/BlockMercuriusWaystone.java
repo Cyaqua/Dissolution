@@ -5,13 +5,11 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.networking.IncorporealMessage;
-import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +28,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 	
@@ -48,9 +45,9 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
 		if(playerCorp.isIncorporeal()){
-			playerCorp.setIncorporeal(false, playerIn);
+			playerCorp.setIncorporeal(false);
 			
 			if(DissolutionConfig.oneUseWaystone)
 				worldIn.setBlockToAir(pos);

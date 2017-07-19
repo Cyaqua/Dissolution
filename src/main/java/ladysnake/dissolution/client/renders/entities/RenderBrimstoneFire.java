@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.renders.entities;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.EntityBrimstoneFire;
+import ladysnake.dissolution.common.entity.item.EntityBrimstoneFire;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;

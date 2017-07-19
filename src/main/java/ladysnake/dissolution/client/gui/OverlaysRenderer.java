@@ -1,10 +1,9 @@
 package ladysnake.dissolution.client.gui;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.init.ModFluids;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -28,9 +27,10 @@ public final class OverlaysRenderer {
 	
 	public void renderOverlays(RenderGameOverlayEvent.Post event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
-		if(IncorporealDataHandler.getHandler(player).isIncorporeal())
-			drawIncorporealOverlay(event.getResolution());
-		if(player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock) {
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
+		if(playerCorp.isIncorporeal())
+			drawIncorporealOverlay(event.getResolution(), playerCorp.isIntangible());
+		if(player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
 			renderWaterOverlayTexture(event.getPartialTicks());
 //			System.out.println("in mercury");
 		}
@@ -70,14 +70,14 @@ public final class OverlaysRenderer {
 	 * Draws the blue overlay telling the player he's a ghost
 	 * @param scaledRes
 	 */
-	public void drawIncorporealOverlay(ScaledResolution scaledRes)
+	public void drawIncorporealOverlay(ScaledResolution scaledRes, boolean intangible)
     {
 		
 		b += inc;
 		//System.out.println(Math.cos(b));
 		
 		GlStateManager.pushAttrib();
-		GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, 0.5F);
+		GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, intangible ? 0.8F : 0.5F);
 		GlStateManager.disableLighting();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableBlend();

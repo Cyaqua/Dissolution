@@ -33,9 +33,9 @@ public enum ModFluids {
 	// just add new fluids here
 
 	/**The forge fluid associated with this block*/
-	public final Fluid fluid;
+	private final Fluid fluid;
 	/**The fluid block*/
-	public final BlockFluidBase fluidBlock;
+	private final BlockFluidBase fluidBlock;
 	
 	/**The register manager*/
 	static final RegisterManager REGISTRY_MANAGER = new RegisterManager();
@@ -69,12 +69,21 @@ public enum ModFluids {
 		this.fluid = fluid;
 	}
 	
+	public Fluid fluid() {
+		return fluid;
+	}
+	
+	public BlockFluidBase fluidBlock() {
+		return fluidBlock;
+	}
+	
 	private void registerFluidBlock() {
 		fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
 		fluidBlock.setUnlocalizedName(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
 		ModBlocks.registerBlock(fluidBlock, false);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void registerFluidModel() {
 		final Item item = Item.getItemFromBlock((Block) fluidBlock);
 		if(item == Items.AIR) {

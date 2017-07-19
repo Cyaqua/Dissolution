@@ -7,15 +7,15 @@ import java.util.Iterator;
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.entity.EntityItemWaystone;
-import ladysnake.dissolution.common.entity.EntityMinion;
-import ladysnake.dissolution.common.entity.EntityMinionPigZombie;
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
-import ladysnake.dissolution.common.entity.EntityMinionStray;
-import ladysnake.dissolution.common.entity.EntityMinionWitherSkeleton;
-import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.item.EntityItemWaystone;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
+import ladysnake.dissolution.common.entity.minion.EntityMinionPigZombie;
+import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
+import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
+import ladysnake.dissolution.common.entity.minion.EntityMinionWitherSkeleton;
+import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
@@ -66,7 +66,7 @@ public class LivingDeathHandler {
 	protected void handlePlayerDeath(LivingDeathEvent event) {
 		
 		final EntityPlayer p = (EntityPlayer) event.getEntity();
-		final IIncorporealHandler corp = IncorporealDataHandler.getHandler(p);
+		final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
 		corp.setLastDeathMessage(
 				p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
 
@@ -88,9 +88,9 @@ public class LivingDeathHandler {
 					flag = true;
 			}
 			
-			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.LIFE_PROTECTION_RING);
+			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.SCARAB_OF_ETERNITY);
 			if(!lifeProtectionRing.isEmpty()) {
-				p.inventory.setInventorySlotContents(p.inventory.getSlotFor(lifeProtectionRing), ItemStack.EMPTY);
+				p.inventory.setInventorySlotContents(InventorySearchHelper.getSlotFor(p.inventory, lifeProtectionRing), ItemStack.EMPTY);
 				flag = true;
 			}
 
@@ -98,7 +98,7 @@ public class LivingDeathHandler {
 			
 			if(DissolutionConfig.bodiesHoldInventory) {
 				
-				if(flag) {
+				if((flag || DissolutionConfig.bodiesHoldInventory) && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
 					transferEquipment(p, body);
 					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
 					p.inventory.clear();
@@ -114,14 +114,14 @@ public class LivingDeathHandler {
 		if(DissolutionConfig.skipDeathScreen) {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
-			corp.setIncorporeal(true, p);
+			corp.setIncorporeal(true);
 			p.setHealth(20f);
 			if(!DissolutionConfig.respawnInNether && DissolutionConfig.wowRespawn) {
 				BlockPos respawnLoc = p.getBedLocation() != null ? p.getBedLocation() : p.world.getSpawnPoint();
 				p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
 			}
 			if(DissolutionConfig.respawnInNether && !p.world.isRemote)
-				CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) p, DissolutionConfig.respawnDimension);
+				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, DissolutionConfig.respawnDimension);
 			event.setCanceled(true);
 		}
 	}
@@ -210,7 +210,7 @@ public class LivingDeathHandler {
 		ItemStack eye = InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
 		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 
-			EntityMinion corpse = null;
+			AbstractMinion corpse = null;
 			
 			if(victim instanceof EntityPigZombie) {
 				corpse = new EntityMinionPigZombie(victim.world, ((EntityZombie)victim).isChild());
@@ -250,7 +250,10 @@ public class LivingDeathHandler {
 			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && !stuff.isEmpty())
 				slot = EntityEquipmentSlot.OFFHAND;
 			if(slot != null) {
-				dest.setItemStackToSlot(slot, stuff);
+				if(dest.getItemStackFromSlot(slot) != ItemStack.EMPTY)
+					dest.entityDropItem(stuff, 0.5f);
+				else
+					dest.setItemStackToSlot(slot, stuff);
 				source.setItemStackToSlot(slot, ItemStack.EMPTY);
 			}
 		}

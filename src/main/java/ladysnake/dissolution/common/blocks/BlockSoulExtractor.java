@@ -3,7 +3,6 @@ package ladysnake.dissolution.common.blocks;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulExtractor;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -12,7 +11,6 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -27,9 +25,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	
@@ -45,11 +40,6 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
         this.setHardness(1.0f);
 		this.setHarvestLevel("pickaxe", 1);
 	}
-	
-	@SideOnly(Side.CLIENT)
-    public void initModel() {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
-    }
 	
 	@Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {

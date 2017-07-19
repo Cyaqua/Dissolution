@@ -28,7 +28,7 @@ public class ModItems {
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static ItemGrandFaux GRAND_FAUX;
 	public static ItemBaseResource BASE_RESOURCE;
-	public static ItemScarabOfEternity LIFE_PROTECTION_RING;
+	public static ItemScarabOfEternity SCARAB_OF_ETERNITY;
 	public static ItemScytheIron SCYTHE_IRON;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
@@ -41,7 +41,7 @@ public class ModItems {
 		DEBUG_ITEM = new ItemDebug();
 		EYE_OF_THE_UNDEAD = new ItemEyeDead();
 		GRAND_FAUX = new ItemGrandFaux();
-		LIFE_PROTECTION_RING = new ItemScarabOfEternity();
+		SCARAB_OF_ETERNITY = new ItemScarabOfEternity();
 		SCYTHE_IRON = new ItemScytheIron();
 		SOUL_GEM = new ItemSoulGem();
 		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();
@@ -53,7 +53,7 @@ public class ModItems {
 		GameRegistry.register(DEBUG_ITEM);
 		GameRegistry.register(EYE_OF_THE_UNDEAD);
 		GameRegistry.register(GRAND_FAUX);
-		GameRegistry.register(LIFE_PROTECTION_RING);
+	GameRegistry.register(SCARAB_OF_ETERNITY);
 		GameRegistry.register(SCYTHE_IRON);
 		GameRegistry.register(SOUL_GEM);
 		GameRegistry.register(SOUL_IN_A_BOTTLE);
@@ -74,7 +74,7 @@ public class ModItems {
 		registerRender(DEBUG_ITEM);
 		registerRender(EYE_OF_THE_UNDEAD);
 		registerRender(GRAND_FAUX);
-		registerRender(LIFE_PROTECTION_RING);
+		registerRender(SCARAB_OF_ETERNITY);
 		registerRender(SCYTHE_IRON);
 		registerRender(SOUL_GEM);
 		registerRender(SOUL_IN_A_BOTTLE);

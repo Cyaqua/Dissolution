@@ -4,14 +4,16 @@ import java.util.Random;
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.init.ModFluids;
-import ladysnake.dissolution.common.world.gen.feature.WorldGenMercuryLakes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
 public class WorldGen implements IWorldGenerator {
+	
+	private WorldGenLakes mercuryLakesGenerator = new WorldGenLakes(ModFluids.MERCURY.fluidBlock());
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
@@ -48,8 +50,8 @@ public class WorldGen implements IWorldGenerator {
 		//new StructureCandle().generate(world, new BlockPos(Xpos, Ypos, Zpos), random);
 		
 		/*MERCURY_LAKES*/
-		if(DissolutionConfig.spawnMercuryLakes)
-			new WorldGenMercuryLakes(ModFluids.MERCURY.fluidBlock).generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
+		if(DissolutionConfig.spawnMercuryLakesFreq > 0 && random.nextInt(DissolutionConfig.spawnMercuryLakesFreq) == 0)
+			mercuryLakesGenerator.generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
 		
 	}
 		

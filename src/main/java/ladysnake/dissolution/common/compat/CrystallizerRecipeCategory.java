@@ -1,10 +1,14 @@
 package ladysnake.dissolution.common.compat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
+import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.inventory.GuiCrystallizer;
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
@@ -12,7 +16,7 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -34,6 +38,24 @@ public class CrystallizerRecipeCategory extends BlankRecipeCategory {
 		this.progressBar = helper.createAnimatedDrawable(helper.createDrawable(background_texture, 176, 14, 25, 13), 200, StartDirection.LEFT, false);
 		this.fuelBar = helper.createAnimatedDrawable(helper.createDrawable(background_texture, 176, 13, 14, 1), 600, StartDirection.BOTTOM, true);
 		this.name = I18n.format("dissolution.jei.recipe.crystallizer");
+	}
+
+	protected static void register(IModRegistry registry) {
+		registry.handleRecipes(CrystallizerRecipe.class, (CrystallizerRecipe cr) -> new BlankRecipeWrapper() {
+
+			@Override
+			public void getIngredients(IIngredients ingredients) {
+				List<ItemStack> inputList = new ArrayList<ItemStack>();
+				inputList.add(cr.getInput());
+				inputList.add(cr.getFuel());
+				ingredients.setInputs(ItemStack.class, inputList);
+				ingredients.setOutput(ItemStack.class, cr.getOutput());
+			}
+		
+		}, Reference.MOD_ID + ".crystallizer");
+	
+		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
+		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
 	}
 	
 	@Override

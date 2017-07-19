@@ -1,13 +1,7 @@
 package ladysnake.dissolution.common.compat;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
-import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
@@ -16,18 +10,18 @@ import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
-import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IStackHelper;
+import net.minecraft.block.Block;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 @JEIPlugin
 public class JEICompat implements IModPlugin {
 
-	public static IStackHelper stackHelper;
-    public static IJeiHelpers jeiHelpers;
-    public static IRecipeRegistry recipeRegistry;
+    private IRecipeRegistry recipeRegistry;
+    private IModRegistry registry;
 	
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {}
@@ -37,31 +31,30 @@ public class JEICompat implements IModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		jeiHelpers = registry.getJeiHelpers();
-        stackHelper = jeiHelpers.getStackHelper();
-        IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
-        IIngredientBlacklist blacklist = jeiHelpers.getIngredientBlacklist();
-        blacklistStuff(blacklist);
-        
-		registry.addRecipeCategories(new CrystallizerRecipeCategory(guiHelper));
-		registry.handleRecipes(CrystallizerRecipe.class, (CrystallizerRecipe cr) -> new BlankRecipeWrapper() {
-
-			@Override
-			public void getIngredients(IIngredients ingredients) {
-				List<ItemStack> inputList = new ArrayList<ItemStack>();
-				inputList.add(cr.getInput());
-				inputList.add(cr.getFuel());
-				ingredients.setInputs(ItemStack.class, inputList);
-				ingredients.setOutput(ItemStack.class, cr.getOutput());
-			}
-			
-		}, Reference.MOD_ID + ".crystallizer");
-		
-		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
-		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
+        this.registry = registry;
+        blacklistStuff();
+		addInformationTabs();
+        CrystallizerRecipeCategory.register(registry);
 	}
 	
-	public void blacklistStuff(IIngredientBlacklist blacklist) {
+	private void addInformationTabs() {
+		addInformationTab(ModBlocks.MERCURIUS_WAYSTONE);
+		addInformationTab(ModBlocks.SOUL_EXTRACTOR);
+		addInformationTab(ModItems.SEPULTURE);
+		addInformationTab(ModItems.SCARAB_OF_ETERNITY);
+	}
+	
+	private void addInformationTab(Block block) {
+		this.addInformationTab(Item.getItemFromBlock(block));
+	}
+	
+	private void addInformationTab(Item item) {
+		//registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution.%s", item.getUnlocalizedName()));
+		registry.addDescription(new ItemStack(item), I18n.format("jei.description.dissolution.%s", item.getUnlocalizedName()));
+	}
+	
+	private void blacklistStuff() {
+		IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		blacklist.addIngredientToBlacklist(new ItemStack(ModItems.DEBUG_ITEM));
 	}
 	
