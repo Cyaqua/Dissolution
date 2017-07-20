@@ -136,13 +136,11 @@ public class EventHandlerClient {
 		if(cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f)
 			player.eyeHeight += player.getDefaultEyeHeight() / 20f;
 			
-		if(DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT) 
-			return;
-		
 		if(playerCorp.isIncorporeal() && !player.isCreative()) {
-		
+
+			// Makes the player glide and stuff
 			if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT) {
-				// Makes the player glide and stuff
+				player.capabilities.setFlySpeed(player.experienceLevel > 0 ? 0.025f : 0.01f);
 				if(playerSP.movementInput.jump && player.experienceLevel > 0 && player.getRidingEntity() == null) {
 					player.motionY = SOUL_VERTICAL_SPEED;
 					player.velocityChanged = true;
