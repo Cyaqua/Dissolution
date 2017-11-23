@@ -1,15 +1,15 @@
 {
-	"forge_marker": 1,
-	"defaults": {
-		"model": "forge:fluid"
-	},
-	"variants": {
-		"mercury": [
-			{
-				"custom": {
-					"fluid": "mercury"
-				}
-			}
-		]
-	}
+  "forge_marker": 1,
+  "defaults": {
+    "model": "forge:fluid"
+  },
+  "variants": {
+    "mercury": [
+      {
+        "custom": {
+          "fluid": "mercury"
+        }
+      }
+    ]
+  }
 }

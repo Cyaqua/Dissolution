@@ -1,77 +1,47 @@
 package ladysnake.dissolution.common;
 
-import net.minecraft.block.ITileEntityProvider;
-
 public class Reference {
-	public static final String MOD_ID = "dissolution";
-	public static final String MOD_NAME = "Dissolution";
-	public static final String VERSION = "0.4.2.3";
-	public static final String MCVERSION = "[1.11.2]";
-	public static final double CONFIG_VERSION = 2.0;
+    public static final String MOD_ID = "dissolution";
+    public static final String MOD_NAME = "Dissolution";
+    static final String VERSION = "0.5.4";
+    static final String MCVERSION = "[1.11.2]";
+    static final String DEPENDENCIES = "after:albedo;after:baubles;";
+    public static final double CONFIG_VERSION = 3.1;
 
-	public static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
-	public static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
+    static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
+    static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
+    static final String GUI_FACTORY_CLASS = "ladysnake.dissolution.common.config.DissolutionGuiFactory";
 
-	public static enum Items {
-		BASE_RESOURCE("base_resource", "itemResource"),
-		DEBUG("debug_item", "itemDebug"),
-		ECTOPLASM("ectoplasm", "itemEctoplasm"),
-		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
-		EYE_DEAD("eye_of_the_undead", "itemEyeOfUndead"),
-		GRAND_FAUX("grand_faux", "itemGrandFaux"),
-		SCARAB_OF_ETERNITY("scarab_of_eternity", "itemScarabOfEternity"),
-		SCYTHE_IRON("iron_scythe", "itemIronScythe"),
-		SOULGEM("soul_gem", "itemSoulGem"),
-		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle"),
-		SEPULTURE("sepulture", "itemSepulture"),
-		SEPULTUREFRAMING("sepulture_framing", "itemSepultureFraming");
+    public enum Blocks {
+        BASE_MACHINE,
+        BARRAGE,
+        CRYSTALLIZER,
+        DRIED_LAVA,
+        ECTOPLASM,
+        ECTOPLASMA,
+        MERCURY_CANDLE,
+        MERCURIUS_WAYSTONE,
+        POWER_CORE,
+        POWER_CABLE,
+        SEPULTURE,
+        SOUL_ANCHOR,
+        SOUL_EXTRACTOR,
+        SULFUR_CANDLE;
 
+        private String unlocalizedName;
+        private String registryName;
 
+        Blocks() {
+            this.unlocalizedName = this.name().toLowerCase();
+            this.registryName = unlocalizedName;
+        }
 
-		private String unlocalizedName;
-		private String registryName;
+        public String getRegistryName() {
+            return this.registryName;
+        }
 
-		Items(String unlocalizedName, String registryName) {
-			this.unlocalizedName = unlocalizedName;
-			this.registryName = registryName;
-		}
-
-		public String getRegistryName() {
-			return registryName;
-		}
-
-		public String getUnlocalizedName() {
-			return unlocalizedName;
-		}
-	}
-
-	public static enum Blocks {
-		CRYSTALLIZER("crystallizer", "blockCrystallizer"),
-		DRIED_LAVA("dried_lava", "blockDriedLava"),
-		ECTOPLASM("ectoplasm_block", "blockEctoplasm"),
-		ECTOPLASMA("ectoplasma_block", "blockEctoplasma"),
-		SOUL_ANCHOR("soul_anchor", "blockSoulAnchor"),
-		MERCURY_CANDLE("mercury_candle", "blockMercuryCandle"),
-		SULFUR_CANDLE("sulfur_candle", "blockSulfurCandle"),
-		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor"),
-		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
-		SEPULTURE("sepulture", "blockSepulture"),
-		RESUSCITATOR("resuscitator","blockResuscitator");
-
-		private String unlocalizedName;
-		private String registryName;
-
-		Blocks(String unlocalizedName, String registryName) {
-			this.unlocalizedName = unlocalizedName;
-			this.registryName = registryName;
-		}
-
-		public String getRegistryName() {
-			return this.registryName;
-		}
-
-		public String getUnlocalizedName() {
-			return this.unlocalizedName;
-		}
-	}
+        public String getUnlocalizedName() {
+            return this.unlocalizedName;
+        }
+    }
 }

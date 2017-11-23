@@ -1,163 +1,168 @@
 package ladysnake.dissolution.common.handlers;
 
-import java.util.List;
-
-import ladysnake.dissolution.common.blocks.ISoulInteractable;
+import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.IPossessable;
+import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.SoulTypes;
 import ladysnake.dissolution.common.config.DissolutionConfig;
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
-import ladysnake.dissolution.common.entity.soul.EntitySoulCamera;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
+import ladysnake.dissolution.common.entity.souls.AbstractSoul;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.SPacketCamera;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.GetCollisionBoxesEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.Iterator;
 
 public class InteractEventsHandler {
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-		if (isGhost(event) && !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof ISoulInteractable)) {
-			event.setCanceled(true);
-		}
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-		String debugPrefix = null; // "[InteractEventsHandler.onPlayerLeftClickBlock] ";
-		if(debugPrefix != null)
-			System.out.println("");
-		if(isGhost(event)) {
-			event.setCanceled(true);
-			
-			if(!DissolutionConfig.wip.enableSoulDash) return;
-			
-			final IIncorporealHandler ghostHandler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-			ghostHandler.setIntangible(true);
-			
-			if(event.getSide() == Side.SERVER && false) {
-				if(debugPrefix != null)
-					System.out.println(debugPrefix + "player position : " + event.getEntityPlayer().getPosition());
-				EntitySoulCamera mount = new EntitySoulCamera((EntityPlayerMP)event.getEntityPlayer());
-				event.getWorld().spawnEntity(mount);
-				Vec3i vec = event.getFace().getOpposite().getDirectionVec();
-				BlockPos start = event.getEntityPlayer().getPosition();
-				BlockPos dest = event.getPos();
-				// first we search for a body belonging to the player in the same Y coordinates (if the player clicked in this direction)
-				List<EntityPlayerCorpse> validCorpses = null;
-				if(event.getFace().getAxis() == EnumFacing.Axis.Y)
-					validCorpses = event.getWorld().getEntitiesWithinAABB(EntityPlayerCorpse.class, 
-							new AxisAlignedBB(start.up(255), start.down(255)), 
-							corpse -> corpse.getPlayer().equals(event.getEntityPlayer().getUniqueID()));
-				System.out.println(debugPrefix + validCorpses);
-				if(validCorpses != null && !validCorpses.isEmpty())
-					dest = validCorpses.get(0).getPosition();
-				else {	// if none are found, we search for an airspace in an acceptable range
-					System.out.println(debugPrefix + "entering for loop " + (dest.distanceSq(start) <= 25) + " " + !event.getWorld().isAirBlock(dest) + " " + !event.getWorld().isAirBlock(dest.down()));
-					for(; dest.distanceSq(start) <= 25 &&
-							!event.getWorld().isAirBlock(dest) && 
-							!event.getWorld().isAirBlock(dest.up()); 
-							dest = dest.add(vec)) {
-						System.out.println(debugPrefix + "(for loop) " + dest);
-					}
-				}
-				System.out.println(debugPrefix + "destination: " + dest);
-				if(dest.distanceSq(start) < 25) {
-					mount.setDest(dest);
-					/*
-					mount.getNavigator().setPath(new Path(new PathPoint[] {
-							new PathPoint(start.getX(), start.getY(), start.getZ()),
-							new PathPoint(dest.getX(), dest.getY(), dest.getZ())}), 1.0);*/
-				}
-				
-			}
-		}
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerRightClickItem(PlayerInteractEvent.RightClickItem event) {
-		if(isGhost(event) && !(event.getItemStack().getItem() instanceof ISoulInteractable))
-			event.setCanceled(true);
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-		EntityPlayer player = event.getEntityPlayer();
-		if(isGhost(event) && !(event.getTarget() instanceof ISoulInteractable)) {
-			if(event.getTarget() instanceof EntityLiving && 
-					SoulTypes.getSoulFor((EntityLiving) event.getTarget()) == SoulTypes.BENIGN && 
-					event.getTarget() != event.getEntityPlayer().getRidingEntity()) {
-				player.startRiding(event.getTarget(), true);
-				player.eyeHeight = event.getTarget().getEyeHeight();
-				player.setInvisible(true);
-				if(!player.world.isRemote) {
-					fakeSpectator((EntityPlayerMP)player, event.getTarget());
-				}
-			}
-			event.setCanceled(true);
-		}
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerEntityInteract(PlayerInteractEvent.EntityInteract event) {
-		if(isGhost(event) && !(event.getTarget() instanceof ISoulInteractable))
-			event.setCanceled(true);
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onEntityMount(EntityMountEvent event) {
-		if(event.isMounting() && isGhost(event)) {
-			
-		} else if(isGhost(event)) {
-			final EntityPlayer player = (EntityPlayer)event.getEntity();
-			((EntityPlayer)event.getEntity()).eyeHeight = ((EntityPlayer)event.getEntity()).getDefaultEyeHeight();
-			((EntityPlayer)event.getEntity()).setInvisible(DissolutionConfig.ghost.invisibleGhosts);
-			if(!player.world.isRemote) {
-				fakeSpectator((EntityPlayerMP)player, player);
-			}
-			if(event.getEntityBeingMounted() instanceof EntityLiving)
-				((EntityLiving)event.getEntityBeingMounted()).setNoAI(false);
-		}
-	}
-	
-	private void fakeSpectator(EntityPlayerMP player, Entity entityToSpectate) {
-        Entity spectatingEntity = (Entity)(entityToSpectate == null ? this : entityToSpectate);
 
-		//((EntityPlayerMP)player).setSpectatingEntity(entityToSpectate);
-        //player.connection.sendPacket(new SPacketCamera(spectatingEntity));
-	}
-	
-	/**
-	 * Checks if the player from the event is intangible
-	 * @param event
-	 * @return true if the event's entity is a non-creative player and a ghost
-	 */
-	private static boolean isGhost(EntityEvent event) {
-		return event.getEntity() instanceof EntityPlayer && 
-				CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).isIncorporeal() && 
-				!((EntityPlayer)event.getEntity()).isCreative();
-	}
-	
-	/**
-	 * Same as {@link #isGhost(EntityEvent)} except optimized for player events.
-	 */
-	private static boolean isGhost(PlayerEvent event) {
-		return CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).isIncorporeal() && !event.getEntityPlayer().isCreative();
-	}
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onPlayerRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        IIncorporealHandler status = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+        if (!event.getEntityPlayer().isCreative()
+                && status.getPossessed() == null
+                && (status.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL
+                || (status.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM
+                && !DissolutionConfigManager.canEctoplasmInteractWith(event.getWorld().getBlockState(event.getPos()).getBlock())))) {
+            event.setCanceled(true);
+        }
+    }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onPlayerLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+        if (isGhost(event)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onGetCollisionBoxes(GetCollisionBoxesEvent event) {
+        if (event.getEntity() instanceof AbstractSoul
+                || event.getEntity() instanceof EntityPlayer
+                && CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity())
+                .getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL) {
+            final Iterator<AxisAlignedBB> iterator = event.getCollisionBoxesList().iterator();
+            while (iterator.hasNext())
+                if (iterator.next().getAverageEdgeLength() < DissolutionConfig.ghost.maxThickness)
+                    iterator.remove();
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onPlayerRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        if (isGhost(event)
+                && !DissolutionConfigManager.canEctoplasmInteractWith(event.getItemStack().getItem()))
+            event.setCanceled(true);
+    }
+
+    /**
+     * Allows possession start
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onPlayerEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+        if (!isGhost(event)) return;
+        event.setCanceled(true);
+        if (event.getSide().isServer() && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+            IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
+            if (host instanceof EntityLivingBase && host.canBePossessedBy(event.getEntityPlayer())) {
+                EntityLivingBase eHost = (EntityLivingBase) host;
+                if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow)
+                    event.getEntityPlayer().inventory.addItemStackToInventory(new ItemStack(Items.ARROW, eHost.world.rand.nextInt(10) + 2));
+                DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
+                if (host != event.getTarget()) {
+                    event.getTarget().setPosition(0, -100, 0);
+                    event.getTarget().world.spawnEntity(eHost);
+                    event.getTarget().world.removeEntity(event.getTarget());
+                }
+                handler.setPossessed(host);
+                event.setCancellationResult(EnumActionResult.SUCCESS);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+        if (handler.getCorporealityStatus().isIncorporeal() && handler.getPossessed() != null)
+            event.setNewSpeed(event.getOriginalSpeed() * 5);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onPlayerEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        if (isGhost(event) && !(event.getTarget() instanceof ISoulInteractable)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
+        final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {        // synchronizes item use between player and possessed entity
+            ((EntityLivingBase) handler.getPossessed()).setActiveHand(event.getEntityLiving().getHeldItemMainhand().equals(event.getItem()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+        }
+    }
+
+    @SubscribeEvent
+    public void onItemUseTick(LivingEntityUseItemEvent.Tick event) {
+        if (event.getDuration() <= 1) {            // prevent the player from finishing the item use if possessing an entity
+            final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+            if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
+                event.getEntityLiving().resetActiveHand();
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onItemUseStop(LivingEntityUseItemEvent.Stop event) {
+        final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
+            ((EntityLivingBase) handler.getPossessed()).stopActiveHand();
+            event.setCanceled(true);            // prevent the player from duplicating the action
+        }
+    }
+
+    /**
+     * Prevents a player from ending possession prematurely
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onEntityMount(EntityMountEvent event) {
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+        if (!event.isMounting() && handler != null && handler.getCorporealityStatus().isIncorporeal()) {
+            if ((event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()))
+                handler.setPossessed(null);
+            else {
+                if (event.getEntityBeingMounted() == handler.getPossessed() && !(handler.setPossessed(null))) {
+                    if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer)
+                        PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
+                    event.setCanceled(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if the player from the event is intangible
+     *
+     * @return true if the event's entity is a non-creative player and a ghost
+     */
+    private static boolean isGhost(PlayerEvent event) {
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+        return handler.getCorporealityStatus().isIncorporeal() && handler.getPossessed() == null
+                && !event.getEntityPlayer().isCreative();
+    }
 }

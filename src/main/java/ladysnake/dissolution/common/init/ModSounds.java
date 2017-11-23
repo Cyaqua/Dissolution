@@ -3,34 +3,32 @@ package ladysnake.dissolution.common.init;
 import ladysnake.dissolution.common.Reference;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
 
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public enum ModSounds {
-	lost_soul_ambient,
-	lost_soul_pain,
-	lost_soul_death;
+    resonant_coil;
 
-	private final SoundEvent sound;
-	static final RegisterManager REGISTRY_MANAGER = new RegisterManager();
+    private final SoundEvent sound;
 
-	ModSounds() {
-		ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.name());
-		this.sound = new SoundEvent(soundLocation);
-		this.sound.setRegistryName(soundLocation);
-	}
+    ModSounds() {
+        ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.name());
+        this.sound = new SoundEvent(soundLocation);
+        this.sound.setRegistryName(soundLocation);
+    }
 
-	public SoundEvent sound() {
-		return this.sound;
-	}
+    public SoundEvent sound() {
+        return this.sound;
+    }
 
-	public static final class RegisterManager {
+    @SubscribeEvent
+    public static void onRegister(RegistryEvent.Register<SoundEvent> event) {
+        IForgeRegistry<SoundEvent> reg = event.getRegistry();
+        for (ModSounds s : ModSounds.values())
+            reg.register(s.sound);
+    }
 
-	    public void onRegister() {
-			for(ModSounds s : ModSounds.values())
-				GameRegistry.register(s.sound);
-		}
-		
-		private RegisterManager() {}
-
-	}
 }

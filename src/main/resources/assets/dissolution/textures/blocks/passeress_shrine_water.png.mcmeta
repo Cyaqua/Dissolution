@@ -1,0 +1,13 @@
+<<<<<<< HEAD:src/main/resources/assets/dissolution/textures/blocks/fluid_mercury_still.png.mcmeta
+{
+  "animation": {
+    "frametime": 6
+  }
+}
+=======
+{
+  "animation": {
+    "frametime": 2
+  }
+}
+>>>>>>> 1.12.2:src/main/resources/assets/dissolution/textures/blocks/passeress_shrine_water.png.mcmeta

@@ -1,7 +1,10 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.OreDictHelper;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.CapabilityDistillateHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityGenericInventoryProvider;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
@@ -10,50 +13,50 @@ import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
-import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulExtractor;
+import ladysnake.dissolution.common.tileentities.*;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class CommonProxy {
-	
-	public void preInit() {
-		ModBlocks.init();
-		ModBlocks.register();
-		ModItems.init();
-		ModItems.register();
-		ModFluids.REGISTRY_MANAGER.onRegister();
-		ModSounds.REGISTRY_MANAGER.onRegister();
-		CapabilityIncorporealHandler.register();
-		CapabilitySoulHandler.register();
-		ModEntities.register();
-		ModStructure.init();
-	}
-	
-	public void init() {
-		MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
-		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
-		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
-		MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
-		
-		ModItems.registerOres();
-		
-		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");
-		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");
-		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + "tileentitysepulture");
-		GameRegistry.registerTileEntity(TileEntitySoulAnchor.class, Reference.MOD_ID + "tileentitysoulanchor");
-		GameRegistry.registerTileEntity(TileEntitySoulCandle.class, Reference.MOD_ID + "tileentitysoulcandle");
 
-		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
-		PacketHandler.initPackets();
-		ModCrafting.register();
-	}
-	
-	public void postInit() {
-		
-	}
+    public void preInit() {
+        MinecraftForge.EVENT_BUS.register(ModModularSetups.INSTANCE);
+        ModEntities.register();
+        CapabilityIncorporealHandler.register();
+        CapabilitySoulHandler.register();
+        CapabilityDistillateHandler.register();
+        CapabilityGenericInventoryProvider.register();
+        ModStructure.init();
+    }
+
+    public void init() {
+        MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+        MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
+        MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
+        MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
+        OreDictHelper.registerOres();
+
+        GameRegistry.registerTileEntity(TileEntityDistillatePipe.class, Reference.MOD_ID + ":tileentityessencecable");
+        GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
+        GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + ":tileentitymodularmachine");
+        GameRegistry.registerTileEntity(TileEntityProxy.class, Reference.MOD_ID + ":tileentityproxy");
+        GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
+        GameRegistry.registerTileEntity(TileEntityMortar.class, Reference.MOD_ID + ":tileentitymortar");
+        GameRegistry.registerTileEntity(TileEntityCrucible.class, Reference.MOD_ID + ":tileentitycrucible");
+
+        NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
+        PacketHandler.initPackets();
+        ModCrafting.register();
+    }
+
+    public void postInit() {
+    }
+
+    public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, int r, int g, int b, int a, float scale, int lifetime) {
+    }
+
+    public abstract Side getSide();
 }
