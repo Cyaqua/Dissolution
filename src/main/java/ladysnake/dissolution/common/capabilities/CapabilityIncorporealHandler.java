@@ -130,7 +130,6 @@ public class CapabilityIncorporealHandler {
 
         private boolean strongSoul;
         private ICorporealityStatus corporealityStatus = CorporealityStatus.BODY;
-        private PossessedStats possessedStats = new PossessedStats(this);
         private DialogueStats dialogueStats = new DialogueStats(this);
         private IDeathStats deathStats = new DeathStats();
         private int lastFood = -1;
@@ -196,8 +195,13 @@ public class CapabilityIncorporealHandler {
             return this.isStrongSoul() ? this.corporealityStatus : CorporealityStatus.BODY;
         }
 
+        /**
+         * Sets the entity possessed by this player
+         * @param possessable the entity to possess. If null, will end existing possession
+         * @return true if the operation succeeded
+         */
         @Override
-        public boolean setPossessed(IPossessable possessable) {
+        public boolean setPossessed(@Nullable IPossessable possessable) {
             if (!this.isStrongSoul()) return false;
             if (possessable != null && !(possessable instanceof Entity))
                 throw new IllegalArgumentException("A player can only possess an entity.");
@@ -240,12 +244,6 @@ public class CapabilityIncorporealHandler {
                 }
             }
             return (IPossessable) host;
-        }
-
-        @Nonnull
-        @Override
-        public IPossessedStats getPossessedStats() {
-            return this.possessedStats;
         }
 
         @Nonnull
@@ -341,7 +339,6 @@ public class CapabilityIncorporealHandler {
                 tag.setUniqueId("possessedEntity", ((Entity) instance.getPossessed()).getUniqueID());
             tag.setTag("dialogueStats", instance.getDialogueStats().serializeNBT());
             tag.setTag("deathStats", instance.getDeathStats().serializeNBT());
-            tag.setTag("possessedStats", instance.getPossessedStats().serializeNBT());
             return tag;
         }
 
@@ -356,7 +353,6 @@ public class CapabilityIncorporealHandler {
             }
             instance.getDialogueStats().deserializeNBT(tag.getCompoundTag("dialogueStats"));
             instance.getDeathStats().deserializeNBT(tag.getCompoundTag("deathStats"));
-            instance.getPossessedStats().deserializeNBT(tag.getCompoundTag("possessedStats"));
         }
     }
 
