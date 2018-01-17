@@ -1,6 +1,8 @@
 # eclipse
 bin
+*.launch
 .settings
+.metadata
 .classpath
 .project
 
@@ -18,5 +20,3 @@ build
 # other
 eclipse
 run
-src\main\resources\assets\minecraft
-Dissolution.wiki
