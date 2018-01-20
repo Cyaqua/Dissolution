@@ -1,6 +1,8 @@
 package ladysnake.dissolution.soulstates;
 
 import ladysnake.dissolution.Dissolution;
+import ladysnake.dissolution.soulstates.strong.StrongSoulState;
+import ladysnake.dissolution.soulstates.SoulState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -19,7 +21,7 @@ public class SoulStates {
             .add((owner, stage, id, obj, oldObj) -> onAdd(obj, oldObj))
             .create();
 
-    public static final SoulState WEAK = new DefaultSoulState().setRegistryName(Dissolution.MODID, "weak_soul");
+    public static final SoulState WEAK = new DefaultState().setRegistryName(Dissolution.MODID, "weak_soul");
     public static final SoulState STRONG = new StrongSoulState().setRegistryName(Dissolution.MODID, "strong_soul");
 
     private static void onAdd(SoulState obj, @Nullable SoulState oldObj) {

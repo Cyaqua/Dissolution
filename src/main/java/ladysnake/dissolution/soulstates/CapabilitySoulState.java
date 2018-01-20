@@ -65,9 +65,7 @@ public class CapabilitySoulState {
                 currentState.resetState(owner);
                 this.currentState = newState;
                 currentState.initState(owner);
-//                return true;
             }
-//            return false;
         }
 
         @Override

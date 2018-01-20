@@ -1,27 +1,18 @@
 package ladysnake.dissolution.soulstates;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public abstract class SoulState extends IForgeRegistryEntry.Impl<SoulState> {
-
-    public abstract NBTTagCompound saveData(EntityPlayer player);
-
-    public abstract void readData(EntityPlayer player, NBTTagCompound stateData);
-
-    public abstract boolean isEventListener();
+public abstract class SoulState extends IForgeRegistryEntry.Impl<SoulState> implements IPlayerState {
 
     public boolean allowStateChange(EntityPlayer player, SoulState newState) {
         return true;
     }
 
-    public void initState(EntityPlayer player) {
-
-    }
-
-    public void resetState(EntityPlayer player) {
-
+    public boolean isPlayerSubscribed(EntityPlayer player) {
+        @SuppressWarnings("ConstantConditions")
+        ISoulStateHandler handler = player.getCapability(ISoulStateHandler.CAPABILITY_STATE_OF_SOUL, null);
+        return handler != null && handler.getCurrentState() == this;
     }
 
 }
