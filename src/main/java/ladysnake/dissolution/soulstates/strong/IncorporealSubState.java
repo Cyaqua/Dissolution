@@ -1,11 +1,10 @@
 package ladysnake.dissolution.soulstates.strong;
 
 import ladysnake.dissolution.Dissolution;
+import ladysnake.dissolution.soulstates.SubState;
 import ladysnake.dissolution.util.IEventCallback;
-import ladysnake.dissolution.soulstates.IPlayerState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.FoodStats;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -18,10 +17,12 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Predicate;
 
-public class IncorporealSubState implements IPlayerState {
+public class IncorporealSubState extends SubState {
 
     private static IncorporealSubState instance;
 

@@ -1,8 +1,11 @@
 package ladysnake.dissolution.soulstates;
 
 import ladysnake.dissolution.Dissolution;
+import ladysnake.dissolution.network.DissolutionPacketHandler;
+import ladysnake.dissolution.network.SoulStateMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -12,6 +15,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -20,7 +24,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Dissolution.MODID)
 public class CapabilitySoulState {
     @CapabilityInject(ISoulStateHandler.class)
     public static Capability<ISoulStateHandler> CAPABILITY_STATE_OF_SOUL;
@@ -41,8 +45,14 @@ public class CapabilitySoulState {
             event.addCapability(new ResourceLocation(Dissolution.MODID, "soul_state_cap"), new Provider((EntityPlayer) event.getObject()));
     }
 
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        if (event.getEntity() instanceof EntityPlayerMP)
+            getHandler(event.getEntity()).ifPresent(h -> DissolutionPacketHandler.NET.sendTo(new SoulStateMessage(), (EntityPlayerMP) event.getEntity()));
+    }
+
     public static class SoulStateHandler implements ISoulStateHandler {
-        private SoulState currentState;
+        private ISoulState currentState;
         private final EntityPlayer owner;
 
         private SoulStateHandler() {
@@ -51,16 +61,16 @@ public class CapabilitySoulState {
 
         public SoulStateHandler(EntityPlayer owner) {
             this.owner = owner;
-            this.currentState = SoulStates.WEAK;
+            this.currentState = ModSoulStates.WEAK_SOUL;
         }
 
         @Override
-        public SoulState getCurrentState() {
+        public ISoulState getCurrentState() {
             return currentState;
         }
 
         @Override
-        public void setCurrentState(SoulState newState) {
+        public void setCurrentState(ISoulState newState) {
             if (currentState.allowStateChange(owner, newState)) {
                 currentState.resetState(owner);
                 this.currentState = newState;
@@ -116,7 +126,7 @@ public class CapabilitySoulState {
 
         @Override
         public void readNBT(Capability<ISoulStateHandler> capability, ISoulStateHandler instance, EnumFacing side, NBTBase nbt) {
-            SoulState state = SoulStates.REGISTRY.getValue(new ResourceLocation(((NBTTagCompound)nbt).getString("current_state")));
+            ISoulState state = ModSoulStates.REGISTRY.getValue(new ResourceLocation(((NBTTagCompound)nbt).getString("current_state")));
             if (state != null) {
                 state.readData(instance.getOwner(), ((NBTTagCompound) nbt).getCompoundTag("state_data"));
             }

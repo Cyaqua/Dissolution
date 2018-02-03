@@ -3,6 +3,7 @@ package ladysnake.dissolution.soulstates.strong;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.events.PossessionEvent;
 import ladysnake.dissolution.soulstates.IPlayerState;
+import ladysnake.dissolution.soulstates.SubState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
-public class PossessingSubState implements IPlayerState {
+public class PossessingSubState extends SubState {
     public static final String NBT_TAG_POSSESSED_MOB = Dissolution.MODID + ":possessed_mob";
 
     private Map<EntityPlayer, PossessionData> possessionMap = new WeakHashMap<>();

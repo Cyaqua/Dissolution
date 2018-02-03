@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -27,12 +28,12 @@ public class StrongSoulState extends SoulState {
     private final IEventCallback<PlayerInteractEvent.EntityInteractSpecific> POSSESSION_CALLBACK =
             event -> attemptPossession(event.getEntityPlayer(), event.getTarget());
 
-    private Map<EntityPlayer, IPlayerState> playerActiveStateMap = new WeakHashMap<>();
+    private Map<EntityPlayer, ISubState> playerActiveStateMap = new WeakHashMap<>();
 
     @Override
     public void initState(EntityPlayer player) {
         super.initState(player);
-        playerActiveStateMap.put(player, SoulStates.WEAK);
+        playerActiveStateMap.put(player, ModSubStates.NONE);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class StrongSoulState extends SoulState {
         soulState.addCallback(
                 PlayerInteractEvent.EntityInteractSpecific.class,
                 POSSESSION_CALLBACK,
-                event1 -> isPlayerSubscribed(event1.getEntityPlayer())
+                event -> isPlayerSubscribed(event.getEntityPlayer())
         );
     }
 
@@ -103,6 +104,8 @@ public class StrongSoulState extends SoulState {
     @Override
     public NBTTagCompound saveData(EntityPlayer player) {
         if (playerActiveStateMap.containsKey(player)) {
+            NBTTagCompound nbt = new NBTTagCompound();
+            nbt.setString("current_sub_state", String.valueOf(playerActiveStateMap.get(player).getRegistryName()));
             return playerActiveStateMap.get(player).saveData(player);
         }
         return new NBTTagCompound();
@@ -111,7 +114,10 @@ public class StrongSoulState extends SoulState {
     @Override
     public void readData(EntityPlayer player, NBTTagCompound stateData) {
         if (playerActiveStateMap.containsKey(player)) {
-            playerActiveStateMap.get(player).readData(player, stateData);
+            ISubState subState = ModSubStates.REGISTRY.getValue(new ResourceLocation(stateData.getString("current_sub_state")));
+            if (subState == null) return;
+            playerActiveStateMap.put(player, subState);
+            subState.readData(player, stateData);
         }
     }
 

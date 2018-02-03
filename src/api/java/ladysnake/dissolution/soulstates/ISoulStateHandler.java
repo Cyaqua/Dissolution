@@ -9,9 +9,9 @@ public interface ISoulStateHandler {
     @CapabilityInject(ISoulStateHandler.class)
     Capability<ISoulStateHandler> CAPABILITY_STATE_OF_SOUL = null;
 
-    SoulState getCurrentState();
+    ISoulState getCurrentState();
 
-    void setCurrentState(SoulState newState);
+    void setCurrentState(ISoulState newState);
 
     EntityPlayer getOwner();
 
