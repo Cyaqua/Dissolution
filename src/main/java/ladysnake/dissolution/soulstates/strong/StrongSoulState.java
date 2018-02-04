@@ -31,7 +31,7 @@ public class StrongSoulState extends SoulState {
     private Map<EntityPlayer, ISubState> playerActiveStateMap = new WeakHashMap<>();
 
     @Override
-    public void initState(EntityPlayer player) {
+    public void initState(EntityPlayer player, Object... args) {
         super.initState(player);
         playerActiveStateMap.put(player, ModSubStates.NONE);
     }
@@ -81,20 +81,18 @@ public class StrongSoulState extends SoulState {
         soulState.addCallback(
                 PlayerInteractEvent.EntityInteractSpecific.class,
                 POSSESSION_CALLBACK,
-                event -> isPlayerSubscribed(event.getEntityPlayer())
+                event -> player == event.getEntityPlayer()
         );
     }
 
-    private EnumActionResult attemptPossession(EntityPlayer possessor, Entity entityIn) {
+    private EnumActionResult attemptPossession(final EntityPlayer possessor, Entity entityIn) {
         if (entityIn instanceof EntityLivingBase) {
             EntityLivingBase possessed = (EntityLivingBase) entityIn;
             if(possessed.isEntityUndead()) {
                 PossessingSubState possessingState = PossessingSubState.getInstance();
                 possessingState.initState(possessor);
                 possessingState.startPossession(possessor, possessed);
-                IncorporealSubState.getInstance().addCallback(LOCK_CALLBACK,
-                        event -> event instanceof PlayerEvent && isPlayerSubscribed(((PlayerEvent)event).getEntityPlayer())
-                        || event instanceof TickEvent.PlayerTickEvent && isPlayerSubscribed(((TickEvent.PlayerTickEvent)event).player));
+                IncorporealSubState.getInstance().initState(possessor, false);
                 return EnumActionResult.SUCCESS;
             }
         }
@@ -117,6 +115,7 @@ public class StrongSoulState extends SoulState {
             ISubState subState = ModSubStates.REGISTRY.getValue(new ResourceLocation(stateData.getString("current_sub_state")));
             if (subState == null) return;
             playerActiveStateMap.put(player, subState);
+            subState.initState(player);
             subState.readData(player, stateData);
         }
     }

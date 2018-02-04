@@ -3,21 +3,19 @@ package ladysnake.dissolution.soulstates.strong;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.events.PossessionEvent;
 import ladysnake.dissolution.soulstates.IPlayerState;
+import ladysnake.dissolution.soulstates.ModSubStates;
 import ladysnake.dissolution.soulstates.SubState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.Map;
 import java.util.Optional;
@@ -27,12 +25,9 @@ public class PossessingSubState extends SubState {
     public static final String NBT_TAG_POSSESSED_MOB = Dissolution.MODID + ":possessed_mob";
 
     private Map<EntityPlayer, PossessionData> possessionMap = new WeakHashMap<>();
-    private static PossessingSubState instance;
 
-    public static synchronized PossessingSubState getInstance() {
-        if (instance == null)
-            instance = new PossessingSubState();
-        return instance;
+    public static PossessingSubState getInstance() {
+        return (PossessingSubState) ModSubStates.POSSESSING;
     }
 
     @SubscribeEvent
@@ -67,12 +62,12 @@ public class PossessingSubState extends SubState {
     }
 
     @Override
-    public void initState(EntityPlayer player) {
+    public void initState(EntityPlayer player, Object... args) {
         possessionMap.put(player, new PossessionData());
     }
 
     /**
-     * Call {@link #initState(EntityPlayer)} before this
+     * Call {@link IPlayerState#initState(EntityPlayer, Object...)} before this
      */
     public void startPossession(EntityPlayer player, EntityLivingBase possessed) {
         if (possessionMap.containsKey(player)) {

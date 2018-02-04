@@ -15,7 +15,7 @@ public interface IPlayerState {
 
     boolean isEventListener();
 
-    default void initState(EntityPlayer player) {
+    default void initState(EntityPlayer player, Object... args) {
         // NO-OP
     }
 

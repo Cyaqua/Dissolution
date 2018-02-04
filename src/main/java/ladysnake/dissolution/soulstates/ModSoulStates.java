@@ -23,7 +23,7 @@ public class ModSoulStates {
     public static final SoulState STRONG_SOUL = WEAK_SOUL;
 
     @SubscribeEvent
-    public void addRegistries(RegistryEvent.NewRegistry event) {
+    public static void addRegistries(RegistryEvent.NewRegistry event) {
         REGISTRY = new RegistryBuilder<ISoulState>()
                 .setType(ISoulState.class)
                 .setName(new ResourceLocation(Dissolution.MODID, "states_of_soul"))
@@ -40,7 +40,7 @@ public class ModSoulStates {
     }
 
     @SubscribeEvent
-    public void onSoulStateRegister(RegistryEvent.Register<ISoulState> event) {
+    public static void onSoulStateRegister(RegistryEvent.Register<ISoulState> event) {
         event.getRegistry().registerAll(
                 WEAK_SOUL.setRegistryName(Dissolution.MODID, "weak_soul"),
                 new StrongSoulState().setRegistryName(Dissolution.MODID, "strong_soul")

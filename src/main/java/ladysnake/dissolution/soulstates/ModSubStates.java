@@ -22,7 +22,7 @@ public class ModSubStates {
     public static final SubState POSSESSING = NONE;
 
     @SubscribeEvent
-    public void addRegistries(RegistryEvent.NewRegistry event) {
+    public static void addRegistries(RegistryEvent.NewRegistry event) {
         REGISTRY = new RegistryBuilder<ISubState>()
                 .setType(ISubState.class)
                 .setName(new ResourceLocation(Dissolution.MODID, "sub_states_of_soul"))
@@ -31,7 +31,7 @@ public class ModSubStates {
     }
 
     @SubscribeEvent
-    public void onSoulStateRegister(RegistryEvent.Register<ISubState> event) {
+    public static void onSoulStateRegister(RegistryEvent.Register<ISubState> event) {
         event.getRegistry().registerAll(
                 NONE.setRegistryName(Dissolution.MODID, "none"),
                 new IncorporealSubState().setRegistryName(Dissolution.MODID, "incorporeal"),

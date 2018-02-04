@@ -4,4 +4,10 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public interface ISubState extends IPlayerState, IForgeRegistryEntry<ISubState> {
 
+    enum Presence {
+        ACTIVE,
+        INACTIVE,
+        ABSENT
+    }
+
 }

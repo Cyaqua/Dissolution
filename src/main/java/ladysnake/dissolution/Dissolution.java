@@ -1,10 +1,12 @@
 package ladysnake.dissolution;
 
+import ladysnake.dissolution.commands.CommandDissolutionTree;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 
 @Mod(
@@ -35,5 +37,10 @@ public class Dissolution {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         proxy.init();
+    }
+
+    @EventHandler
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandDissolutionTree());
     }
 }

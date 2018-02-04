@@ -1,11 +1,13 @@
 package ladysnake.dissolution.soulstates.strong;
 
 import ladysnake.dissolution.Dissolution;
+import ladysnake.dissolution.soulstates.ModSubStates;
 import ladysnake.dissolution.soulstates.SubState;
 import ladysnake.dissolution.util.IEventCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.FoodStats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -24,15 +26,10 @@ import java.util.function.Predicate;
 
 public class IncorporealSubState extends SubState {
 
-    private static IncorporealSubState instance;
-
-    public static synchronized IncorporealSubState getInstance() {
-        if (instance == null)
-            instance = new IncorporealSubState();
-        return instance;
+    public static IncorporealSubState getInstance() {
+        return (IncorporealSubState) ModSubStates.INCORPOREAL;
     }
 
-    private static final Object PRESENT = new Object();
     private static MethodHandle isImmuneToFireMH, foodTimer, foodExhaustionLevel, flyToggleTimer;
 
     static {
@@ -50,7 +47,10 @@ public class IncorporealSubState extends SubState {
         }
     }
 
-    private Map<EntityPlayer, Object> subscribedPlayers = new WeakHashMap<>();
+    /**
+     * True if a player is actively incorporeal, false if a player is technically incorporeal, absent if a player is neither
+     */
+    private Map<EntityPlayer, Boolean> subscribedPlayers = new WeakHashMap<>();
     private Map<IEventCallback, Predicate> callbacks = new HashMap<>();
 
     public <T extends Event> void addCallback(Class<T> eventType, IEventCallback<T> callback, Predicate<T> precondition) {
@@ -83,9 +83,10 @@ public class IncorporealSubState extends SubState {
     }
 
     @Override
-    public void initState(EntityPlayer player) {
-        subscribedPlayers.put(player, PRESENT);
-        changeState(player, true);
+    public void initState(EntityPlayer player, Object... args) {
+        Boolean active = args.length > 0 && args[0] instanceof Boolean ? (Boolean) args[0] : Boolean.TRUE;
+        subscribedPlayers.put(player, active);
+        changeState(player, active);
     }
 
     @Override
