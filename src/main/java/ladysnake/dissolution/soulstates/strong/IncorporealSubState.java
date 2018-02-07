@@ -7,7 +7,6 @@ import ladysnake.dissolution.util.IEventCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.FoodStats;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -83,8 +82,11 @@ public class IncorporealSubState extends SubState {
     }
 
     @Override
-    public void initState(EntityPlayer player, Object... args) {
-        Boolean active = args.length > 0 && args[0] instanceof Boolean ? (Boolean) args[0] : Boolean.TRUE;
+    public void initState(EntityPlayer player) {
+        initState(player, true);
+    }
+
+    public void initState(EntityPlayer player, boolean active) {
         subscribedPlayers.put(player, active);
         changeState(player, active);
     }

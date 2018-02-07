@@ -62,12 +62,12 @@ public class PossessingSubState extends SubState {
     }
 
     @Override
-    public void initState(EntityPlayer player, Object... args) {
+    public void initState(EntityPlayer player) {
         possessionMap.put(player, new PossessionData());
     }
 
     /**
-     * Call {@link IPlayerState#initState(EntityPlayer, Object...)} before this
+     * Call {@link IPlayerState#initState(EntityPlayer)} before this
      */
     public void startPossession(EntityPlayer player, EntityLivingBase possessed) {
         if (possessionMap.containsKey(player)) {

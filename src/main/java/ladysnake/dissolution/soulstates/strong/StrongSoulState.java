@@ -8,21 +8,13 @@ import ladysnake.dissolution.util.IEventCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import java.util.Map;
-import java.util.WeakHashMap;
 
 public class StrongSoulState extends SoulState {
 
@@ -31,7 +23,7 @@ public class StrongSoulState extends SoulState {
             event -> attemptPossession(event.getEntityPlayer(), event.getTarget());
 
     @Override
-    public void initState(EntityPlayer player, Object... args) {
+    public void initState(EntityPlayer player) {
         super.initState(player);
         enableSubState(player, ModSubStates.NONE);
     }
@@ -89,7 +81,7 @@ public class StrongSoulState extends SoulState {
                 PossessingSubState possessingState = PossessingSubState.getInstance();
                 possessingState.initState(possessor);
                 possessingState.startPossession(possessor, possessed);
-                IncorporealSubState.getInstance().initState(possessor, false);
+                IncorporealSubState.getInstance().initState(possessor);
                 return EnumActionResult.SUCCESS;
             }
         }

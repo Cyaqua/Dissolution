@@ -18,8 +18,8 @@ public class ModSubStates {
     public static IForgeRegistry<ISubState> REGISTRY;
 
     public static final SubState NONE = new DefaultSubState();
-    public static final SubState INCORPOREAL = NONE;
-    public static final SubState POSSESSING = NONE;
+    public static final IncorporealSubState INCORPOREAL = new IncorporealSubState();
+    public static final PossessingSubState POSSESSING = new PossessingSubState();
 
     @SubscribeEvent
     public static void addRegistries(RegistryEvent.NewRegistry event) {
@@ -34,8 +34,8 @@ public class ModSubStates {
     public static void onSoulStateRegister(RegistryEvent.Register<ISubState> event) {
         event.getRegistry().registerAll(
                 NONE.setRegistryName(Dissolution.MODID, "none"),
-                new IncorporealSubState().setRegistryName(Dissolution.MODID, "incorporeal"),
-                new PossessingSubState().setRegistryName(Dissolution.MODID, "possessing")
+                INCORPOREAL.setRegistryName(Dissolution.MODID, "incorporeal"),
+                POSSESSING.setRegistryName(Dissolution.MODID, "possessing")
         );
     }
 }

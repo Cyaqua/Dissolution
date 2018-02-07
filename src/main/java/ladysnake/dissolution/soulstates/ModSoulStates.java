@@ -20,7 +20,7 @@ public class ModSoulStates {
     public static IForgeRegistry<ISoulState> REGISTRY;
 
     public static final SoulState WEAK_SOUL = new DefaultState();
-    public static final SoulState STRONG_SOUL = WEAK_SOUL;
+    public static final SoulState STRONG_SOUL = new StrongSoulState();
 
     @SubscribeEvent
     public static void addRegistries(RegistryEvent.NewRegistry event) {
@@ -43,7 +43,7 @@ public class ModSoulStates {
     public static void onSoulStateRegister(RegistryEvent.Register<ISoulState> event) {
         event.getRegistry().registerAll(
                 WEAK_SOUL.setRegistryName(Dissolution.MODID, "weak_soul"),
-                new StrongSoulState().setRegistryName(Dissolution.MODID, "strong_soul")
+                STRONG_SOUL.setRegistryName(Dissolution.MODID, "strong_soul")
         );
     }
 }
