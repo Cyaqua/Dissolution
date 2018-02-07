@@ -5,8 +5,8 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public interface IPlayerState {
 
-    default NBTTagCompound saveData(EntityPlayer player) {
-        return new NBTTagCompound();
+    default NBTTagCompound saveData(EntityPlayer player, NBTTagCompound compound) {
+        return compound;
     }
 
     default void readData(EntityPlayer player, NBTTagCompound stateData) {

@@ -85,7 +85,7 @@ public class PossessingSubState extends SubState {
     }
 
     @Override
-    public NBTTagCompound saveData(EntityPlayer player) {
+    public NBTTagCompound saveData(EntityPlayer player, NBTTagCompound compound) {
         NBTTagCompound nbt = new NBTTagCompound();
         if (possessionMap.containsKey(player)) {
             nbt.setTag("possessed_data", possessionMap.get(player).possessedNBT);

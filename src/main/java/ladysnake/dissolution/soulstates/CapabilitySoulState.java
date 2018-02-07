@@ -70,12 +70,10 @@ public class CapabilitySoulState {
         }
 
         @Override
-        public void setCurrentState(ISoulState newState) {
-            if (currentState.allowStateChange(owner, newState)) {
-                currentState.resetState(owner);
-                this.currentState = newState;
-                currentState.initState(owner);
-            }
+        public void changeCurrentState(ISoulState newState) {
+            currentState.resetState(owner);
+            this.currentState = newState;
+            currentState.initState(owner);
         }
 
         @Override
@@ -120,17 +118,17 @@ public class CapabilitySoulState {
         public NBTBase writeNBT(Capability<ISoulStateHandler> capability, ISoulStateHandler instance, EnumFacing side) {
             NBTTagCompound nbt = new NBTTagCompound();
             nbt.setString("current_state", Objects.requireNonNull(instance.getCurrentState().getRegistryName(), "attempted to save an unregistered state of soul").toString());
-            nbt.setTag("state_data", instance.getCurrentState().saveData(instance.getOwner()));
+            nbt.setTag("state_data", instance.getCurrentState().saveData(instance.getOwner(), new NBTTagCompound()));
             return nbt;
         }
 
         @Override
         public void readNBT(Capability<ISoulStateHandler> capability, ISoulStateHandler instance, EnumFacing side, NBTBase nbt) {
-            ISoulState state = ModSoulStates.REGISTRY.getValue(new ResourceLocation(((NBTTagCompound)nbt).getString("current_state")));
+            ISoulState state = ModSoulStates.REGISTRY.getValue(new ResourceLocation(((NBTTagCompound) nbt).getString("current_state")));
             if (state != null) {
                 state.readData(instance.getOwner(), ((NBTTagCompound) nbt).getCompoundTag("state_data"));
             }
-            instance.setCurrentState(state);
+            instance.changeCurrentState(state);
         }
     }
 }

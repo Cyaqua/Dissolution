@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class DefaultState extends SoulState {
     @Override
-    public NBTTagCompound saveData(EntityPlayer player) {
+    public NBTTagCompound saveData(EntityPlayer player, NBTTagCompound compound) {
         return new NBTTagCompound();
     }
 

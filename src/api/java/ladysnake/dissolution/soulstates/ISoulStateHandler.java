@@ -11,7 +11,7 @@ public interface ISoulStateHandler {
 
     ISoulState getCurrentState();
 
-    void setCurrentState(ISoulState newState);
+    void changeCurrentState(ISoulState newState);
 
     EntityPlayer getOwner();
 

@@ -8,7 +8,9 @@ import ladysnake.dissolution.util.IEventCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -28,22 +30,17 @@ public class StrongSoulState extends SoulState {
     private final IEventCallback<PlayerInteractEvent.EntityInteractSpecific> POSSESSION_CALLBACK =
             event -> attemptPossession(event.getEntityPlayer(), event.getTarget());
 
-    private Map<EntityPlayer, ISubState> playerActiveStateMap = new WeakHashMap<>();
-
     @Override
     public void initState(EntityPlayer player, Object... args) {
         super.initState(player);
-        playerActiveStateMap.put(player, ModSubStates.NONE);
+        enableSubState(player, ModSubStates.NONE);
     }
 
     @Override
     public void resetState(EntityPlayer player) {
         super.resetState(player);
-        if (playerActiveStateMap.get(player) instanceof PossessingSubState)
-            playerActiveStateMap.get(player).resetState(player);
-        if (playerActiveStateMap.get(player) instanceof IncorporealSubState)
-            playerActiveStateMap.get(player).resetState(player);
-        playerActiveStateMap.remove(player);
+        if (!isPlayerSubscribed(player)) return;
+        playerActiveStateMap.get(player).forEach(state -> disableSubState(player, state));
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -56,28 +53,28 @@ public class StrongSoulState extends SoulState {
 
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
-        @SuppressWarnings("SuspiciousMethodCalls")
-        IPlayerState state = playerActiveStateMap.get(event.getEntityLiving());
-        if (state instanceof PossessingSubState) {
-            state.resetState((EntityPlayer) event.getEntityLiving());
-            event.getEntityLiving().heal(20f);
-            event.setCanceled(true);
+        if (event.getEntityLiving() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+            if (disableSubState(player, ModSubStates.POSSESSING)) {
+                event.getEntityLiving().heal(20f);
+                event.setCanceled(true);
+            }
         }
     }
 
     @SubscribeEvent
     public void onPossessionStop(PossessionEvent event) {
-        if (!event.isPossessionStart() && playerActiveStateMap.containsKey(event.getEntityPlayer())) {
+        if (!event.isPossessionStart() && isPlayerSubscribed(event.getEntityPlayer())) {
             IncorporealSubState state = IncorporealSubState.getInstance();
-            playerActiveStateMap.put(event.getEntityPlayer(), state);
+            enableSubState(event.getEntityPlayer(), state);
             state.removeCallback(LOCK_CALLBACK);
         }
     }
 
     private void makePlayerIncorporeal(EntityPlayer player) {
         IncorporealSubState soulState = IncorporealSubState.getInstance();
-        playerActiveStateMap.put(player, soulState);
         soulState.initState(player);
+        enableSubState(player, soulState);
         soulState.addCallback(
                 PlayerInteractEvent.EntityInteractSpecific.class,
                 POSSESSION_CALLBACK,
@@ -97,27 +94,6 @@ public class StrongSoulState extends SoulState {
             }
         }
         return EnumActionResult.PASS;
-    }
-
-    @Override
-    public NBTTagCompound saveData(EntityPlayer player) {
-        if (playerActiveStateMap.containsKey(player)) {
-            NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setString("current_sub_state", String.valueOf(playerActiveStateMap.get(player).getRegistryName()));
-            return playerActiveStateMap.get(player).saveData(player);
-        }
-        return new NBTTagCompound();
-    }
-
-    @Override
-    public void readData(EntityPlayer player, NBTTagCompound stateData) {
-        if (playerActiveStateMap.containsKey(player)) {
-            ISubState subState = ModSubStates.REGISTRY.getValue(new ResourceLocation(stateData.getString("current_sub_state")));
-            if (subState == null) return;
-            playerActiveStateMap.put(player, subState);
-            subState.initState(player);
-            subState.readData(player, stateData);
-        }
     }
 
     @Override

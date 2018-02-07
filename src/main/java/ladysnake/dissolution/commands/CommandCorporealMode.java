@@ -86,7 +86,7 @@ public class CommandCorporealMode extends CommandBase {
                 ISoulStateHandler handler = CapabilitySoulState.getHandler(player).orElseThrow(IllegalStateException::new);
 //                if (!handler.isStrongSoul())
 //                    throw new CommandException("commands.dissolution.corporeality_mode.set.weak_soul", player.getName());
-                handler.setCurrentState(newStatus);
+                handler.changeCurrentState(newStatus);
 
                 if (args.length >= 4) {
                     String s1 = buildString(args, 3);
