@@ -26,6 +26,7 @@ public class ModSubStates {
         REGISTRY = new RegistryBuilder<ISubState>()
                 .setType(ISubState.class)
                 .setName(new ResourceLocation(Dissolution.MODID, "sub_states_of_soul"))
+                .add((owner, stage, id, obj, oldObj) -> ModSoulStates.onAdd(obj, oldObj))
                 .setMaxID(255)
                 .create();
     }

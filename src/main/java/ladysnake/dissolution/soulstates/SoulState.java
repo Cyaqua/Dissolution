@@ -20,8 +20,11 @@ public abstract class SoulState extends IForgeRegistryEntry.Impl<ISoulState> imp
     }
 
     public boolean disableSubState(EntityPlayer player, ISubState subState) {
-        subState.resetState(player);
-        return playerActiveStateMap.containsKey(player) && playerActiveStateMap.get(player).remove(subState);
+        if (playerActiveStateMap.containsKey(player) && playerActiveStateMap.get(player).remove(subState)) {
+            subState.resetState(player);
+            return true;
+        }
+        return false;
     }
 
     protected boolean isSubStateEnabled(EntityPlayer player, ISubState subState) {

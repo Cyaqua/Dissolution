@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 public class IncorporealSubState extends SubState {
 
     public static IncorporealSubState getInstance() {
-        return (IncorporealSubState) ModSubStates.INCORPOREAL;
+        return ModSubStates.INCORPOREAL;
     }
 
     private static MethodHandle isImmuneToFireMH, foodTimer, foodExhaustionLevel, flyToggleTimer;

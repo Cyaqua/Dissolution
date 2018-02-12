@@ -38,7 +38,7 @@ public class StrongSoulState extends SoulState {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onPlayerClone(PlayerEvent.Clone event) {
         // If you die in soul form, you are reset. Otherwise, you become a soul
-        if (isPlayerSubscribed(event.getOriginal()) && !(playerActiveStateMap.get(event.getOriginal()) instanceof IncorporealSubState)) {
+        if (isPlayerSubscribed(event.getOriginal()) && !isSubStateEnabled(event.getOriginal(), ModSubStates.INCORPOREAL)) {
             makePlayerIncorporeal(event.getEntityPlayer());
         }
     }

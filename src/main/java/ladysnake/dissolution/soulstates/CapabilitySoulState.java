@@ -122,6 +122,7 @@ public class CapabilitySoulState {
             return nbt;
         }
 
+
         @Override
         public void readNBT(Capability<ISoulStateHandler> capability, ISoulStateHandler instance, EnumFacing side, NBTBase nbt) {
             ISoulState state = ModSoulStates.REGISTRY.getValue(new ResourceLocation(((NBTTagCompound) nbt).getString("current_state")));

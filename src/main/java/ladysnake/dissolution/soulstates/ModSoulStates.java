@@ -27,12 +27,12 @@ public class ModSoulStates {
         REGISTRY = new RegistryBuilder<ISoulState>()
                 .setType(ISoulState.class)
                 .setName(new ResourceLocation(Dissolution.MODID, "states_of_soul"))
+                .add((owner, stage, id, obj, oldObj) -> ModSoulStates.onAdd(obj, oldObj))
                 .setMaxID(255)
-                .add((owner, stage, id, obj, oldObj) -> onAdd(obj, oldObj))
                 .create();
     }
 
-    private static void onAdd(ISoulState obj, @Nullable ISoulState oldObj) {
+    static void onAdd(IPlayerState obj, @Nullable IPlayerState oldObj) {
         if (oldObj != null && oldObj.isEventListener())
             MinecraftForge.EVENT_BUS.unregister(oldObj);
         if (obj.isEventListener())
