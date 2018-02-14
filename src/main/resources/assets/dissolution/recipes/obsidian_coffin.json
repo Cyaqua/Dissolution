@@ -1,0 +1,20 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "OOO",
+    "CCC"
+  ],
+  "key": {
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "obsidian"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "chestWood"
+    }
+  },
+  "result": {
+    "item": "dissolution:obsidian_coffin"
+  }
+}
